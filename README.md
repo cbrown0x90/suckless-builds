@@ -1,2 +1,2 @@
 # suckless-builds
-configs for suckless programs: st, Surf, dwm, and tabbed
+configs for suckless programs: st, surf, dwm, and tabbed
