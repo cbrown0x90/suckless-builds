@@ -1,0 +1,1046 @@
+diff -Naur ../patch-gen/tabbed-0.6/config.def.h ./config.def.h
+--- ../patch-gen/tabbed-0.6/config.def.h	2014-01-21 13:22:03.000000000 -0500
++++ ./config.def.h	2015-10-29 20:41:47.204552061 -0400
+@@ -1,11 +1,13 @@
+ /* See LICENSE file for copyright and license details. */
+ 
+ /* appearance */
+-static const char font[]        = "-*-*-medium-*-*-*-14-*-*-*-*-*-*-*";
++static const char font[]        = "monospace-9";
+ static const char* normbgcolor  = "#222222";
+ static const char* normfgcolor  = "#cccccc";
+ static const char* selbgcolor   = "#555555";
+ static const char* selfgcolor   = "#ffffff";
++static const char* urgbgcolor   = "#111111";
++static const char* urgfgcolor   = "#cc0000";
+ static const char before[]      = "<";
+ static const char after[]       = ">";
+ static const int  tabwidth      = 200;
+diff -Naur ../patch-gen/tabbed-0.6/config.h ./config.h
+--- ../patch-gen/tabbed-0.6/config.h	1969-12-31 19:00:00.000000000 -0500
++++ ./config.h	2015-10-29 20:46:35.530094254 -0400
+@@ -0,0 +1,60 @@
++/* See LICENSE file for copyright and license details. */
++
++/* appearance */
++static const char font[]        = "Terminus 8";
++static const char* normbgcolor  = "#FFFFFF";
++static const char* normfgcolor  = "#000000";
++static const char* selbgcolor   = "#555555";
++static const char* selfgcolor   = "#ffffff";
++static const char* urgbgcolor   = "#111111";
++static const char* urgfgcolor   = "#cc0000";
++static const char before[]      = "<";
++static const char after[]       = ">";
++static const int  tabwidth      = 200;
++static const Bool foreground    = True;
++
++/*
++ * Where to place a new tab when it is opened. When npisrelative is True,
++ * then the current position is changed + newposition. If npisrelative
++ * is False, then newposition is an absolute position.
++ */
++static int  newposition   = 0;
++static Bool npisrelative  = False;
++
++#define SETPROP(p) { \
++	.v = (char *[]){ "/bin/sh", "-c", \
++		"prop=\"`xwininfo -children -id $1 | grep '^     0x' | sed -e's@^ *\\(0x[0-9a-f]*\\) \"\\([^\"]*\\)\".*@\\1 \\2@' | xargs -0 printf %b | dmenu -l 10`\" &&" \
++		"xprop -id $1 -f $0 8s -set $0 \"$prop\"", \
++		p, winid, NULL \
++	} \
++}
++
++#define MODKEY ControlMask
++static Key keys[] = { \
++	/* modifier                     key        function        argument */
++	{ MODKEY|ShiftMask,             XK_Return, focusonce,      { 0 } },
++	{ MODKEY|ShiftMask,             XK_Return, spawn,          { 0 } },
++	{ MODKEY,                       XK_t,      spawn,          SETPROP("_TABBED_SELECT_TAB") },
++
++	{ MODKEY|ShiftMask,             XK_l,      rotate,         { .i = +1 } },
++	{ MODKEY|ShiftMask,             XK_h,      rotate,         { .i = -1 } },
++	{ MODKEY|ShiftMask,             XK_j,      movetab,        { .i = -1 } },
++	{ MODKEY|ShiftMask,             XK_k,      movetab,        { .i = +1 } },
++	{ MODKEY,                       XK_Tab,    rotate,         { .i = 0 } },
++
++	{ MODKEY,                       XK_1,      move,           { .i = 0 } },
++	{ MODKEY,                       XK_2,      move,           { .i = 1 } },
++	{ MODKEY,                       XK_3,      move,           { .i = 2 } },
++	{ MODKEY,                       XK_4,      move,           { .i = 3 } },
++	{ MODKEY,                       XK_5,      move,           { .i = 4 } },
++	{ MODKEY,                       XK_6,      move,           { .i = 5 } },
++	{ MODKEY,                       XK_7,      move,           { .i = 6 } },
++	{ MODKEY,                       XK_8,      move,           { .i = 7 } },
++	{ MODKEY,                       XK_9,      move,           { .i = 8 } },
++	{ MODKEY,                       XK_0,      move,           { .i = 9 } },
++
++	{ MODKEY,                       XK_q,      killclient,     { 0 } },
++
++	{ 0,                            XK_F11,    fullscreen,     { 0 } },
++};
++
+diff -Naur ../patch-gen/tabbed-0.6/config.mk ./config.mk
+--- ../patch-gen/tabbed-0.6/config.mk	2014-01-21 13:22:03.000000000 -0500
++++ ./config.mk	2015-10-29 20:41:47.204552061 -0400
+@@ -8,11 +8,11 @@
+ MANPREFIX = ${PREFIX}/share/man
+ 
+ # includes and libs
+-INCS = -I. -I/usr/include
+-LIBS = -L/usr/lib -lc -lX11
++INCS = -I. -I/usr/include -I/usr/include/freetype2
++LIBS = -L/usr/lib -lc -lX11 -lfontconfig -lXft
+ 
+ # flags
+-CPPFLAGS = -DVERSION=\"${VERSION}\" -D_BSD_SOURCE
++CPPFLAGS = -DVERSION=\"${VERSION}\" -D_DEFAULT_SOURCE
+ CFLAGS = -std=c99 -pedantic -Wall -O0 ${INCS} ${CPPFLAGS}
+ LDFLAGS = -s ${LIBS}
+ 
+diff -Naur ../patch-gen/tabbed-0.6/custom-patch.diff ./custom-patch.diff
+--- ../patch-gen/tabbed-0.6/custom-patch.diff	1969-12-31 19:00:00.000000000 -0500
++++ ./custom-patch.diff	2015-10-29 20:55:46.534611994 -0400
+@@ -0,0 +1,100 @@
++diff -Naur ../patch-gen/tabbed-0.6/config.def.h ./config.def.h
++--- ../patch-gen/tabbed-0.6/config.def.h	2014-01-21 13:22:03.000000000 -0500
+++++ ./config.def.h	2015-10-29 20:41:47.204552061 -0400
++@@ -1,11 +1,13 @@
++ /* See LICENSE file for copyright and license details. */
++ 
++ /* appearance */
++-static const char font[]        = "-*-*-medium-*-*-*-14-*-*-*-*-*-*-*";
+++static const char font[]        = "monospace-9";
++ static const char* normbgcolor  = "#222222";
++ static const char* normfgcolor  = "#cccccc";
++ static const char* selbgcolor   = "#555555";
++ static const char* selfgcolor   = "#ffffff";
+++static const char* urgbgcolor   = "#111111";
+++static const char* urgfgcolor   = "#cc0000";
++ static const char before[]      = "<";
++ static const char after[]       = ">";
++ static const int  tabwidth      = 200;
++diff -Naur ../patch-gen/tabbed-0.6/config.h ./config.h
++--- ../patch-gen/tabbed-0.6/config.h	1969-12-31 19:00:00.000000000 -0500
+++++ ./config.h	2015-10-29 20:46:35.530094254 -0400
++@@ -0,0 +1,60 @@
+++/* See LICENSE file for copyright and license details. */
+++
+++/* appearance */
+++static const char font[]        = "Terminus 8";
+++static const char* normbgcolor  = "#FFFFFF";
+++static const char* normfgcolor  = "#000000";
+++static const char* selbgcolor   = "#555555";
+++static const char* selfgcolor   = "#ffffff";
+++static const char* urgbgcolor   = "#111111";
+++static const char* urgfgcolor   = "#cc0000";
+++static const char before[]      = "<";
+++static const char after[]       = ">";
+++static const int  tabwidth      = 200;
+++static const Bool foreground    = True;
+++
+++/*
+++ * Where to place a new tab when it is opened. When npisrelative is True,
+++ * then the current position is changed + newposition. If npisrelative
+++ * is False, then newposition is an absolute position.
+++ */
+++static int  newposition   = 0;
+++static Bool npisrelative  = False;
+++
+++#define SETPROP(p) { \
+++	.v = (char *[]){ "/bin/sh", "-c", \
+++		"prop=\"`xwininfo -children -id $1 | grep '^     0x' | sed -e's@^ *\\(0x[0-9a-f]*\\) \"\\([^\"]*\\)\".*@\\1 \\2@' | xargs -0 printf %b | dmenu -l 10`\" &&" \
+++		"xprop -id $1 -f $0 8s -set $0 \"$prop\"", \
+++		p, winid, NULL \
+++	} \
+++}
+++
+++#define MODKEY ControlMask
+++static Key keys[] = { \
+++	/* modifier                     key        function        argument */
+++	{ MODKEY|ShiftMask,             XK_Return, focusonce,      { 0 } },
+++	{ MODKEY|ShiftMask,             XK_Return, spawn,          { 0 } },
+++	{ MODKEY,                       XK_t,      spawn,          SETPROP("_TABBED_SELECT_TAB") },
+++
+++	{ MODKEY|ShiftMask,             XK_l,      rotate,         { .i = +1 } },
+++	{ MODKEY|ShiftMask,             XK_h,      rotate,         { .i = -1 } },
+++	{ MODKEY|ShiftMask,             XK_j,      movetab,        { .i = -1 } },
+++	{ MODKEY|ShiftMask,             XK_k,      movetab,        { .i = +1 } },
+++	{ MODKEY,                       XK_Tab,    rotate,         { .i = 0 } },
+++
+++	{ MODKEY,                       XK_1,      move,           { .i = 0 } },
+++	{ MODKEY,                       XK_2,      move,           { .i = 1 } },
+++	{ MODKEY,                       XK_3,      move,           { .i = 2 } },
+++	{ MODKEY,                       XK_4,      move,           { .i = 3 } },
+++	{ MODKEY,                       XK_5,      move,           { .i = 4 } },
+++	{ MODKEY,                       XK_6,      move,           { .i = 5 } },
+++	{ MODKEY,                       XK_7,      move,           { .i = 6 } },
+++	{ MODKEY,                       XK_8,      move,           { .i = 7 } },
+++	{ MODKEY,                       XK_9,      move,           { .i = 8 } },
+++	{ MODKEY,                       XK_0,      move,           { .i = 9 } },
+++
+++	{ MODKEY,                       XK_q,      killclient,     { 0 } },
+++
+++	{ 0,                            XK_F11,    fullscreen,     { 0 } },
+++};
+++
++diff -Naur ../patch-gen/tabbed-0.6/config.mk ./config.mk
++--- ../patch-gen/tabbed-0.6/config.mk	2014-01-21 13:22:03.000000000 -0500
+++++ ./config.mk	2015-10-29 20:41:47.204552061 -0400
++@@ -8,11 +8,11 @@
++ MANPREFIX = ${PREFIX}/share/man
++ 
++ # includes and libs
++-INCS = -I. -I/usr/include
++-LIBS = -L/usr/lib -lc -lX11
+++INCS = -I. -I/usr/include -I/usr/include/freetype2
+++LIBS = -L/usr/lib -lc -lX11 -lfontconfig -lXft
++ 
++ # flags
++-CPPFLAGS = -DVERSION=\"${VERSION}\" -D_BSD_SOURCE
+++CPPFLAGS = -DVERSION=\"${VERSION}\" -D_DEFAULT_SOURCE
++ CFLAGS = -std=c99 -pedantic -Wall -O0 ${INCS} ${CPPFLAGS}
++ LDFLAGS = -s ${LIBS}
++ 
+diff -Naur ../patch-gen/tabbed-0.6/LICENSE ./LICENSE
+--- ../patch-gen/tabbed-0.6/LICENSE	2014-01-21 13:22:03.000000000 -0500
++++ ./LICENSE	2015-10-29 20:41:47.204552061 -0400
+@@ -1,8 +1,8 @@
+ MIT/X Consortium License
+ 
+ © 2009-2011 Enno Boland <g s01 de>
+-© 2011 Connor Lane Smith <cls@lubutu.com>
+-© 2012 Christoph Lohmann <20h@r-36.net> 
++© 2011,2015 Connor Lane Smith <cls@lubutu.com>
++© 2012-2015 Christoph Lohmann <20h@r-36.net>
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
+diff -Naur ../patch-gen/tabbed-0.6/Makefile ./Makefile
+--- ../patch-gen/tabbed-0.6/Makefile	2014-01-21 13:22:03.000000000 -0500
++++ ./Makefile	2015-10-29 20:41:47.204552061 -0400
+@@ -3,10 +3,11 @@
+ 
+ include config.mk
+ 
+-SRC = tabbed.c
++SRC = tabbed.c xembed.c
+ OBJ = ${SRC:.c=.o}
++BIN = ${OBJ:.o=}
+ 
+-all: options tabbed
++all: options ${BIN}
+ 
+ options:
+ 	@echo tabbed build options:
+@@ -24,13 +25,13 @@
+ 	@echo creating $@ from config.def.h
+ 	@cp config.def.h $@
+ 
+-tabbed: tabbed.o
++.o:
+ 	@echo CC -o $@
+-	@${CC} -o $@ tabbed.o ${LDFLAGS}
++	@${CC} -o $@ $< ${LDFLAGS}
+ 
+ clean:
+ 	@echo cleaning
+-	@rm -f tabbed ${OBJ} tabbed-${VERSION}.tar.gz
++	@rm -f ${BIN} ${OBJ} tabbed-${VERSION}.tar.gz
+ 
+ dist: clean
+ 	@echo creating dist tarball
+@@ -42,19 +43,23 @@
+ 	@rm -rf tabbed-${VERSION}
+ 
+ install: all
+-	@echo installing executable file to ${DESTDIR}${PREFIX}/bin
++	@echo installing executable files to ${DESTDIR}${PREFIX}/bin
+ 	@mkdir -p ${DESTDIR}${PREFIX}/bin
+-	@cp -f tabbed ${DESTDIR}${PREFIX}/bin
++	@cp -f ${BIN} ${DESTDIR}${PREFIX}/bin
+ 	@chmod 755 ${DESTDIR}${PREFIX}/bin/tabbed
+-	@echo installing manual page to ${DESTDIR}${MANPREFIX}/man1
++	@echo installing manual pages to ${DESTDIR}${MANPREFIX}/man1
+ 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
+ 	@sed "s/VERSION/${VERSION}/g" < tabbed.1 > ${DESTDIR}${MANPREFIX}/man1/tabbed.1
+ 	@chmod 644 ${DESTDIR}${MANPREFIX}/man1/tabbed.1
++	@sed "s/VERSION/${VERSION}/g" < xembed.1 > ${DESTDIR}${MANPREFIX}/man1/xembed.1
++	@chmod 644 ${DESTDIR}${MANPREFIX}/man1/xembed.1
+ 
+ uninstall:
+-	@echo removing executable file from ${DESTDIR}${PREFIX}/bin
++	@echo removing executable files from ${DESTDIR}${PREFIX}/bin
+ 	@rm -f ${DESTDIR}${PREFIX}/bin/tabbed
+-	@echo removing manual page from ${DESTDIR}${MANPREFIX}/man1
++	@rm -f ${DESTDIR}${PREFIX}/bin/xembed
++	@echo removing manual pages from ${DESTDIR}${MANPREFIX}/man1
+ 	@rm -f ${DESTDIR}${MANPREFIX}/man1/tabbed.1
++	@rm -f ${DESTDIR}${MANPREFIX}/man1/xembed.1
+ 
+ .PHONY: all options clean dist install uninstall
+diff -Naur ../patch-gen/tabbed-0.6/tabbed.1 ./tabbed.1
+--- ../patch-gen/tabbed-0.6/tabbed.1	2014-01-21 13:22:03.000000000 -0500
++++ ./tabbed.1	2015-10-29 20:41:47.204552061 -0400
+@@ -13,10 +13,22 @@
+ .RB [ \-n
+ .IR name ]
+ .RB [ \-p
+-.IR [ s +/- ] pos ]
++.RB [ s {+/-} ] \fIpos\fR ]
++.RB [ \-o
++.IR normbgcol ]
++.RB [ \-O
++.IR normfgcol ]
++.RB [ \-t
++.IR selbgcol ]
++.RB [ \-T
++.IR selfgcol ]
++.RB [ \-u
++.IR urgbgcol ]
++.RB [ \-U
++.IR urgfgcol ]
+ .RB [ \-r
+ .IR narg ]
+-.IR [ command ... ]
++.RI [ "command ..." ]
+ .SH DESCRIPTION
+ .B tabbed
+ is a simple tabbed container for applications which support XEmbed. Tabbed
+@@ -42,7 +54,9 @@
+ .BI \-g " geometry"
+ defines the X11 geometry string, which will fixate the height and width of
+ tabbed.
+-Them form is [=][<width>{xX}<height>][{+-}<xoffset>{+-}<yoffset>]. See
++The syntax is
++.RI [=][ width {xX} height ][{+-} xoffset {+-} yoffset ].
++See
+ .BR XParseGeometry (3)
+ for further details.
+ .TP
+@@ -50,7 +64,7 @@
+ will set the WM_CLASS attribute to
+ .I name.
+ .TP
+-.BI \-p " [ s +/-] pos"
++.BR \-p " [" s {+-}] \fIpos\fR
+ will set the absolute or relative position of where to start a new tab. When
+ .I pos
+ is is given without 's' in front it is an absolute position. Then negative
+@@ -70,20 +84,26 @@
+ .B \-s
+ will disable automatic spawning of the command.
+ .TP
+-.BI \-t " color"
+-defines the selected background color.
+-.IR #RGB ,
+-.IR #RRGGBB ,
++.BI \-o " normbgcol"
++defines the normal background color.
++.RI # RGB ,
++.RI # RRGGBB ,
+ and X color names are supported.
+ .TP
+-.BI \-T " color"
++.BI \-O " normfgcol"
++defines the normal foreground color.
++.TP
++.BI \-t " selbgcol"
++defines the selected background color.
++.TP
++.BI \-T " selfgbcol"
+ defines the selected foreground color.
+ .TP
+-.BI \-u " color"
+-defines the normal background color.
++.BI \-u " urgbgcol"
++defines the urgent background color.
+ .TP
+-.BI \-U " color"
+-defines the normal foreground color.
++.BI \-U " urgfgbcol"
++defines the urgent foreground color.
+ .TP
+ .B \-v
+ prints version information to stderr, then exits.
+@@ -138,7 +158,7 @@
+ .SH LICENSE
+ See the LICENSE file for the terms of redistribution.
+ .SH SEE ALSO
+-.BR st (1)
++.BR st (1),
++.BR xembed (1)
+ .SH BUGS
+ Please report them.
+-
+diff -Naur ../patch-gen/tabbed-0.6/tabbed.c ./tabbed.c
+--- ../patch-gen/tabbed-0.6/tabbed.c	2014-01-21 13:22:03.000000000 -0500
++++ ./tabbed.c	2015-10-29 20:41:47.207885381 -0400
+@@ -15,6 +15,7 @@
+ #include <X11/Xproto.h>
+ #include <X11/Xutil.h>
+ #include <X11/XKBlib.h>
++#include <X11/Xft/Xft.h>
+ 
+ #include "arg.h"
+ 
+@@ -64,16 +65,16 @@
+ 
+ typedef struct {
+ 	int x, y, w, h;
+-	unsigned long norm[ColLast];
+-	unsigned long sel[ColLast];
++	XftColor norm[ColLast];
++	XftColor sel[ColLast];
++	XftColor urg[ColLast];
+ 	Drawable drawable;
+ 	GC gc;
+ 	struct {
+ 		int ascent;
+ 		int descent;
+ 		int height;
+-		XFontSet set;
+-		XFontStruct *xfont;
++		XftFont *xfont;
+ 	} font;
+ } DC; /* draw context */
+ 
+@@ -81,7 +82,7 @@
+ 	char name[256];
+ 	Window win;
+ 	int tabx;
+-	Bool mapped;
++	Bool urgent;
+ 	Bool closed;
+ } Client;
+ 
+@@ -92,11 +93,12 @@
+ static void configurenotify(const XEvent *e);
+ static void configurerequest(const XEvent *e);
+ static void createnotify(const XEvent *e);
++static void unmapnotify(const XEvent *e);
+ static void destroynotify(const XEvent *e);
+ static void die(const char *errstr, ...);
+ static void drawbar(void);
+-static void drawtext(const char *text, unsigned long col[ColLast]);
+-static void *emallocz(size_t size);
++static void drawtext(const char *text, XftColor col[ColLast]);
++static void *ecalloc(size_t n, size_t size);
+ static void *erealloc(void *o, size_t size);
+ static void expose(const XEvent *e);
+ static void focus(int c);
+@@ -105,7 +107,7 @@
+ static void fullscreen(const Arg *arg);
+ static char* getatom(int a);
+ static int getclient(Window w);
+-static unsigned long getcolor(const char *colstr);
++static XftColor getcolor(const char *colstr);
+ static int getfirsttab(void);
+ static Bool gettextprop(Window w, Atom atom, char *text, unsigned int size);
+ static void initfont(const char *fontstr);
+@@ -140,6 +142,7 @@
+ 	[ConfigureNotify] = configurenotify,
+ 	[ConfigureRequest] = configurerequest,
+ 	[CreateNotify] = createnotify,
++	[UnmapNotify] = unmapnotify,
+ 	[DestroyNotify] = destroynotify,
+ 	[Expose] = expose,
+ 	[FocusIn] = focusin,
+@@ -176,15 +179,13 @@
+ 	int fc;
+ 	Arg arg;
+ 
+-	fc = getfirsttab();
+-
+-	if((fc > 0 && ev->x < TEXTW(before)) || ev->x < 0)
++	if(ev->y < 0 || ev->y > bh)
+ 		return;
+ 
+-	if(ev->y < 0 || ev-> y > bh)
++	if(((fc = getfirsttab()) > 0 && ev->x < TEXTW(before)) || ev->x < 0)
+ 		return;
+ 
+-	for(i = (fc > 0) ? fc : 0; i < nclients; i++) {
++	for(i = fc; i < nclients; i++) {
+ 		if(clients[i]->tabx > ev->x) {
+ 			switch(ev->button) {
+ 			case Button1:
+@@ -219,12 +220,6 @@
+ 	free(clients);
+ 	clients = NULL;
+ 
+-	if(dc.font.set) {
+-		XFreeFontSet(dpy, dc.font.set);
+-	} else {
+-		XFreeFont(dpy, dc.font.xfont);
+-	}
+-
+ 	XFreePixmap(dpy, dc.drawable);
+ 	XFreeGC(dpy, dc.gc);
+ 	XDestroyWindow(dpy, win);
+@@ -285,6 +280,15 @@
+ }
+ 
+ void
++unmapnotify(const XEvent *e) {
++	const XUnmapEvent *ev = &e->xunmap;
++	int c;
++
++	if((c = getclient(ev->window)) > -1)
++		unmanage(c);
++}
++
++void
+ destroynotify(const XEvent *e) {
+ 	const XDestroyWindowEvent *ev = &e->xdestroywindow;
+ 	int c;
+@@ -305,8 +309,8 @@
+ 
+ void
+ drawbar(void) {
+-	unsigned long *col;
+-	int c, fc, width, n = 0;
++	XftColor *col;
++	int c, cc, fc, width;
+ 	char *name = NULL;
+ 
+ 	if(nclients == 0) {
+@@ -320,13 +324,18 @@
+ 		return;
+ 	}
+ 
++	if (nclients == 1) {
++		XMoveResizeWindow(dpy, clients[0]->win, 0, 0, ww, wh - 0);
++		return;
++	} else if (nclients == 2)
++		XMoveResizeWindow(dpy, clients[1]->win, 0, bh, ww, wh - bh);
++
+ 	width = ww;
+-	clients[nclients-1]->tabx = -1;
+-	fc = getfirsttab();
+-	if(fc > -1)
+-		n = nclients - fc;
++	cc = ww / tabwidth;
++	if(nclients > cc)
++		cc = (ww - TEXTW(before) - TEXTW(after)) / tabwidth;
+ 
+-	if((n * tabwidth) > width) {
++	if((fc = getfirsttab()) + cc < nclients) {
+ 		dc.w = TEXTW(after);
+ 		dc.x = width - dc.w;
+ 		drawtext(after, dc.sel);
+@@ -341,17 +350,14 @@
+ 		width -= dc.w;
+ 	}
+ 
+-	for(c = (fc > 0)? fc : 0; c < nclients && dc.x < width; c++) {
+-		dc.w = tabwidth;
++	cc = MIN(cc, nclients);
++	for(c = fc; c < fc + cc; c++) {
++		dc.w = width / cc;
+ 		if(c == sel) {
+ 			col = dc.sel;
+-			if((n * tabwidth) > width) {
+-				dc.w += width % tabwidth;
+-			} else {
+-				dc.w = width - (n - 1) * tabwidth;
+-			}
++			dc.w += width % cc;
+ 		} else {
+-			col = dc.norm;
++			col = clients[c]->urgent ? dc.urg : dc.norm;
+ 		}
+ 		drawtext(clients[c]->name, col);
+ 		dc.x += dc.w;
+@@ -362,12 +368,13 @@
+ }
+ 
+ void
+-drawtext(const char *text, unsigned long col[ColLast]) {
++drawtext(const char *text, XftColor col[ColLast]) {
+ 	int i, x, y, h, len, olen;
+ 	char buf[256];
++	XftDraw *d;
+ 	XRectangle r = { dc.x, dc.y, dc.w, dc.h };
+ 
+-	XSetForeground(dpy, dc.gc, col[ColBG]);
++	XSetForeground(dpy, dc.gc, col[ColBG].pixel);
+ 	XFillRectangles(dpy, dc.drawable, dc.gc, &r, 1);
+ 	if(!text)
+ 		return;
+@@ -388,21 +395,18 @@
+ 		for(i = len; i && i > len - 3; buf[--i] = '.');
+ 	}
+ 
+-	XSetForeground(dpy, dc.gc, col[ColFG]);
+-	if(dc.font.set) {
+-		XmbDrawString(dpy, dc.drawable, dc.font.set,
+-				dc.gc, x, y, buf, len);
+-	} else {
+-		XDrawString(dpy, dc.drawable, dc.gc, x, y, buf, len);
+-	}
++	d = XftDrawCreate(dpy, dc.drawable, DefaultVisual(dpy, screen), DefaultColormap(dpy, screen));
++
++	XftDrawStringUtf8(d, &col[ColFG], dc.font.xfont, x, y, (XftChar8 *) buf, len);
++	XftDrawDestroy(d);
+ }
+ 
+ void *
+-emallocz(size_t size) {
++ecalloc(size_t n, size_t size) {
+ 	void *p;
+ 
+-	if(!(p = calloc(1, size)))
+-		die("tabbed: cannot malloc\n");
++	if(!(p = calloc(n, size)))
++		die("tabbed: cannot calloc\n");
+ 	return p;
+ }
+ 
+@@ -427,6 +431,7 @@
+ focus(int c) {
+ 	char buf[BUFSIZ] = "tabbed-"VERSION" ::";
+ 	size_t i, n;
++	XWMHints* wmh;
+ 
+ 	/* If c, sel and clients are -1, raise tabbed-win itself */
+ 	if(nclients == 0) {
+@@ -450,12 +455,18 @@
+ 	sendxembed(c, XEMBED_WINDOW_ACTIVATE, 0, 0, 0);
+ 	xsettitle(win, clients[c]->name);
+ 
+-	/* If sel is already c, change nothing. */
+ 	if(sel != c) {
+ 		lastsel = sel;
+ 		sel = c;
+ 	}
+ 
++	if(clients[c]->urgent && (wmh = XGetWMHints(dpy, clients[c]->win))) {
++		wmh->flags &= ~XUrgencyHint;
++		XSetWMHints(dpy, clients[c]->win, wmh);
++		clients[c]->urgent = False;
++		XFree(wmh);
++	}
++
+ 	drawbar();
+ 	XSync(dpy, False);
+ }
+@@ -524,34 +535,29 @@
+ 	return -1;
+ }
+ 
+-unsigned long
++XftColor
+ getcolor(const char *colstr) {
+-	Colormap cmap = DefaultColormap(dpy, screen);
+-	XColor color;
++	XftColor color;
+ 
+-	if(!XAllocNamedColor(dpy, cmap, colstr, &color, &color))
++	if(!XftColorAllocName(dpy, DefaultVisual(dpy, screen), DefaultColormap(dpy, screen), colstr, &color))
+ 		die("tabbed: cannot allocate color '%s'\n", colstr);
+ 
+-	return color.pixel;
++	return color;
+ }
+ 
+ int
+ getfirsttab(void) {
+-	int c, n, fc;
++	int cc, ret;
+ 
+ 	if(sel < 0)
+-		return -1;
++		return 0;
+ 
+-	c = sel;
+-	fc = 0;
+-	n = nclients;
+-	if((n * tabwidth) > ww) {
+-		for(; (c * tabwidth) > (ww / 2)
+-				&& (n * tabwidth) > ww;
+-				c--, n--, fc++);
+-	}
++	cc = ww / tabwidth;
++	if(nclients > cc)
++		cc = (ww - TEXTW(before) - TEXTW(after)) / tabwidth;
+ 
+-	return fc;
++	ret = sel - cc / 2 + (cc + 1) % 2;
++	return ret < 0 ? 0 : (ret + cc > nclients ? MAX(0, nclients - cc) : ret);
+ }
+ 
+ Bool
+@@ -585,41 +591,12 @@
+ 
+ void
+ initfont(const char *fontstr) {
+-	char *def, **missing, **font_names;
+-	int i, n;
+-	XFontStruct **xfonts;
++	if(!(dc.font.xfont = XftFontOpenName(dpy, screen, fontstr))
++	&& !(dc.font.xfont = XftFontOpenName(dpy, screen, "fixed")))
++		die("error, cannot load font: '%s'\n", fontstr);
+ 
+-	missing = NULL;
+-	if(dc.font.set)
+-		XFreeFontSet(dpy, dc.font.set);
+-
+-	dc.font.set = XCreateFontSet(dpy, fontstr, &missing, &n, &def);
+-	if(missing) {
+-		while(n--)
+-			fprintf(stderr, "tabbed: missing fontset: %s\n", missing[n]);
+-		XFreeStringList(missing);
+-	}
+-
+-	if(dc.font.set) {
+-		dc.font.ascent = dc.font.descent = 0;
+-		n = XFontsOfFontSet(dc.font.set, &xfonts, &font_names);
+-		for(i = 0, dc.font.ascent = 0, dc.font.descent = 0; i < n; i++) {
+-			dc.font.ascent = MAX(dc.font.ascent, (*xfonts)->ascent);
+-			dc.font.descent = MAX(dc.font.descent,(*xfonts)->descent);
+-			xfonts++;
+-		}
+-	} else {
+-		if(dc.font.xfont)
+-			XFreeFont(dpy, dc.font.xfont);
+-		dc.font.xfont = NULL;
+-		if(!(dc.font.xfont = XLoadQueryFont(dpy, fontstr))
+-				&& !(dc.font.xfont = XLoadQueryFont(dpy, "fixed"))) {
+-			die("tabbed: cannot load font: '%s'\n", fontstr);
+-		}
+-
+-		dc.font.ascent = dc.font.xfont->ascent;
+-		dc.font.descent = dc.font.xfont->descent;
+-	}
++	dc.font.ascent = dc.font.xfont->ascent;
++	dc.font.descent = dc.font.xfont->descent;
+ 	dc.font.height = dc.font.ascent + dc.font.descent;
+ }
+ 
+@@ -705,7 +682,7 @@
+ 			}
+ 		}
+ 
+-		c = emallocz(sizeof(*c));
++		c = ecalloc(1, sizeof *c);
+ 		c->win = w;
+ 
+ 		nclients++;
+@@ -776,19 +753,19 @@
+ 	int c;
+ 	Client *new;
+ 
+-	if(sel < 0 || (arg->i == 0))
+-		return;
+-
+-	c = sel + arg->i;
+-	while(c >= nclients)
+-		c -= nclients;
+-	while(c < 0)
++	c = (sel + arg->i) % nclients;
++	if(c < 0)
+ 		c += nclients;
+ 
+-	new = clients[c];
+-	clients[c] = clients[sel];
+-	clients[sel] = new;
++	if(sel < 0 || (c == sel))
++		return;
+ 
++	new = clients[sel];
++	if(sel < c)
++		memmove(&clients[sel], &clients[sel+1], sizeof(Client *) * (c - sel));
++	else
++		memmove(&clients[c+1], &clients[c], sizeof(Client *) * (sel - c));
++	clients[c] = new;
+ 	sel = c;
+ 
+ 	drawbar();
+@@ -797,6 +774,7 @@
+ void
+ propertynotify(const XEvent *e) {
+ 	const XPropertyEvent *ev = &e->xproperty;
++	XWMHints *wmh;
+ 	int c;
+ 	char* selection = NULL;
+ 	Arg arg;
+@@ -811,6 +789,21 @@
+ 			arg.v = cmd;
+ 			spawn(&arg);
+ 		}
++	} else if(ev->state == PropertyNewValue && ev->atom == XA_WM_HINTS
++			&& (c = getclient(ev->window)) > -1
++			&& (wmh = XGetWMHints(dpy, clients[c]->win))) {
++		if(wmh->flags & XUrgencyHint) {
++			if(c != sel) {
++				clients[c]->urgent = True;
++				drawbar();
++			}
++			XFree(wmh);
++			if((wmh = XGetWMHints(dpy, win))) {
++				wmh->flags |= XUrgencyHint;
++				XSetWMHints(dpy, win, wmh);
++			}
++		}
++		XFree(wmh);
+ 	} else if(ev->state != PropertyDelete && ev->atom == XA_WM_NAME
+ 			&& (c = getclient(ev->window)) > -1) {
+ 		updatetitle(c);
+@@ -897,7 +890,7 @@
+ setcmd(int argc, char *argv[], int replace) {
+ 	int i;
+ 
+-	cmd = emallocz((argc+3) * sizeof(*cmd));
++	cmd = ecalloc(argc + 3, sizeof *cmd);
+ 	if (argc == 0)
+ 		return;
+ 	for(i = 0; i < argc; i++)
+@@ -910,6 +903,7 @@
+ void
+ setup(void) {
+ 	int bitm, tx, ty, tw, th, dh, dw, isfixed;
++	XWMHints *wmh;
+ 	XClassHint class_hint;
+ 	XSizeHints *size_hint;
+ 
+@@ -969,14 +963,14 @@
+ 	dc.norm[ColFG] = getcolor(normfgcolor);
+ 	dc.sel[ColBG] = getcolor(selbgcolor);
+ 	dc.sel[ColFG] = getcolor(selfgcolor);
++	dc.urg[ColBG] = getcolor(urgbgcolor);
++	dc.urg[ColFG] = getcolor(urgfgcolor);
+ 	dc.drawable = XCreatePixmap(dpy, root, ww, wh,
+ 			DefaultDepth(dpy, screen));
+ 	dc.gc = XCreateGC(dpy, root, 0, 0);
+-	if(!dc.font.set)
+-		XSetFont(dpy, dc.gc, dc.font.xfont->fid);
+ 
+ 	win = XCreateSimpleWindow(dpy, root, wx, wy, ww, wh, 0,
+-			dc.norm[ColFG], dc.norm[ColBG]);
++			dc.norm[ColFG].pixel, dc.norm[ColBG].pixel);
+ 	XMapRaised(dpy, win);
+ 	XSelectInput(dpy, win, SubstructureNotifyMask|FocusChangeMask|
+ 			ButtonPressMask|ExposureMask|KeyPressMask|PropertyChangeMask|
+@@ -997,8 +991,10 @@
+ 		size_hint->min_width = size_hint->max_width = ww;
+ 		size_hint->min_height = size_hint->max_height = wh;
+ 	}
+-	XSetWMProperties(dpy, win, NULL, NULL, NULL, 0, size_hint, NULL, NULL);
++	wmh = XAllocWMHints();
++	XSetWMProperties(dpy, win, NULL, NULL, NULL, 0, size_hint, wmh, NULL);
+ 	XFree(size_hint);
++	XFree(wmh);
+ 
+ 	XSetWMProtocols(dpy, win, &wmatom[WMDelete], 1);
+ 
+@@ -1040,15 +1036,9 @@
+ 
+ int
+ textnw(const char *text, unsigned int len) {
+-	XRectangle r;
+-
+-	if(dc.font.set) {
+-		XmbTextExtents(dc.font.set, text, len, NULL, &r);
+-
+-		return r.width;
+-	}
+-
+-	return XTextWidth(dc.font.xfont, text, len);
++	XGlyphInfo ext;
++	XftTextExtentsUtf8(dpy, dc.font.xfont, (XftChar8 *) text, len, &ext);
++	return ext.xOff;
+ }
+ 
+ void
+@@ -1059,9 +1049,10 @@
+ 		return;
+ 	}
+ 
+-	if(!nclients) {
++	if(!nclients)
+ 		return;
+-	} else if(c == 0) {
++
++	if(c == 0) {
+ 		/* First client. */
+ 		nclients--;
+ 		free(clients[0]);
+@@ -1080,36 +1071,25 @@
+ 	}
+ 
+ 	if(nclients <= 0) {
+-		sel = -1;
+-		lastsel = -1;
++		lastsel = sel = -1;
+ 
+-		if (closelastclient) {
++		if(closelastclient) {
+ 			running = False;
+-		} else if (fillagain && running) {
++		} else if(fillagain && running) {
+ 			spawn(NULL);
+ 		}
+ 	} else {
+-		if(c == lastsel) {
+-			lastsel = -1;
++		if(lastsel >= nclients) {
++			lastsel = nclients - 1;
+ 		} else if(lastsel > c) {
+ 			lastsel--;
+ 		}
+-		lastsel = MIN(lastsel, nclients - 1);
+ 
+-		if(c == sel) {
+-			/* Note that focus() will never set lastsel == sel,
+-			 * so if here lastsel == sel, it was decreased by above if() clause
+-			 * and was actually (sel + 1) before.
+-			 */
+-			if(lastsel > 0) {
+-				focus(lastsel);
+-			} else {
+-				focus(0);
+-				lastsel = 1;
+-			}
++		if(c == sel && lastsel >= 0) {
++			focus(lastsel);
+ 		} else {
+ 			if(sel > c)
+-				sel -= 1;
++				sel--;
+ 			if(sel >= nclients)
+ 				sel = nclients - 1;
+ 
+@@ -1199,7 +1179,8 @@
+ void
+ usage(void) {
+ 	die("usage: %s [-dfhsv] [-g geometry] [-n name] [-p [s+/-]pos] [-r narg] "
+-		"[-u color] [-U color] [-t color] [-T color] command...\n", argv0);
++		"[-o color] [-O color] [-t color] [-T color] [-u color] [-U color] "
++		"command...\n", argv0);
+ }
+ 
+ int
+@@ -1240,10 +1221,11 @@
+ 	case 's':
+ 		doinitspawn = False;
+ 		break;
+-	case 'v':
+-		die("tabbed-"VERSION", © 2009-2012"
+-			" tabbed engineers, see LICENSE"
+-			" for details.\n");
++	case 'o':
++		normbgcolor = EARGF(usage());
++		break;
++	case 'O':
++		normfgcolor = EARGF(usage());
+ 		break;
+ 	case 't':
+ 		selbgcolor = EARGF(usage());
+@@ -1252,10 +1234,15 @@
+ 		selfgcolor = EARGF(usage());
+ 		break;
+ 	case 'u':
+-		normbgcolor = EARGF(usage());
++		urgbgcolor = EARGF(usage());
+ 		break;
+ 	case 'U':
+-		normfgcolor = EARGF(usage());
++		urgfgcolor = EARGF(usage());
++		break;
++	case 'v':
++		die("tabbed-"VERSION", © 2009-2014"
++			" tabbed engineers, see LICENSE"
++			" for details.\n");
+ 		break;
+ 	default:
+ 	case 'h':
+diff -Naur ../patch-gen/tabbed-0.6/xembed.1 ./xembed.1
+--- ../patch-gen/tabbed-0.6/xembed.1	1969-12-31 19:00:00.000000000 -0500
++++ ./xembed.1	2015-10-29 20:55:30.514674472 -0400
+@@ -0,0 +1,35 @@
++.TH XEMBED 1 tabbed\-VERSION
++.SH NAME
++xembed \- XEmbed foreground process
++.SH SYNOPSIS
++.B xembed
++.I flag command
++.RI [ "argument ..." ]
++.SH DESCRIPTION
++If the environment variable XEMBED is set, and
++.B xembed
++is in the foreground of its controlling tty, it will execute
++.IP
++command flag $XEMBED [argument ...]
++.LP
++Otherwise it will execute
++.IP
++command [argument ...]
++.LP
++.SH EXAMPLE
++In a terminal emulator within a
++.B tabbed
++session, the shell alias
++.IP
++$ alias surf='xembed -e surf'
++.LP
++will cause `surf' to open in a new tab, unless it is run in the background,
++i.e. `surf &', in which case it will instead open in a new window.
++.SH AUTHORS
++See the LICENSE file for the authors.
++.SH LICENSE
++See the LICENSE file for the terms of redistribution.
++.SH SEE ALSO
++.BR tabbed (1)
++.SH BUGS
++Please report them.
+diff -Naur ../patch-gen/tabbed-0.6/xembed.c ./xembed.c
+--- ../patch-gen/tabbed-0.6/xembed.c	1969-12-31 19:00:00.000000000 -0500
++++ ./xembed.c	2015-10-29 20:55:30.514674472 -0400
+@@ -0,0 +1,46 @@
++/*
++ * See LICENSE file for copyright and license details.
++ */
++
++#include <fcntl.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++
++int
++main(int argc, char **argv)
++{
++	char *xembed;
++	int tty;
++	pid_t pgrp, tcpgrp;
++
++	if(argc < 3) {
++		fprintf(stderr, "usage: %s flag cmd ...\n", argv[0]);
++		return 2;
++	}
++
++	if(!(xembed = getenv("XEMBED")))
++		goto noembed;
++
++	if((tty = open("/dev/tty", O_RDONLY)) < 0)
++		goto noembed;
++
++	pgrp = getpgrp();
++	tcpgrp = tcgetpgrp(tty);
++
++	close(tty);
++
++	if(pgrp == tcpgrp) { /* in foreground of tty */
++		argv[0] = argv[2];
++		argv[2] = xembed;
++	} else {
++noembed:
++		argv += 2;
++	}
++
++	execvp(argv[0], argv);
++
++	perror(argv[0]); /* failed to execute */
++	return 1;
++}
++
