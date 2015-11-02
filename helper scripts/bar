@@ -1,0 +1,61 @@
+#!/bin/bash
+eth_state="$(cat /sys/class/net/enp3s0/operstate)"
+eth_ip=$(ip -o -4 addr show dev enp3s0 | awk -F '[ /]+' '/global/ {print $4}')
+wlan_state="$(cat /sys/class/net/wlan0/operstate)"
+wlan_ip=$(ip -o -4 addr show dev wlan0 | awk -F '[ /]+' '/global/ {print $4}')
+BAT_STATE=$(acpi | awk '{print substr($3, 0, length($3)-1)}')
+BAT_RAW=$(acpi | awk '{print substr($4, 0, length($4)-2)}')
+DATE=$( date +"%F %T")
+AUDIO_STATE=$(amixer sget Master | egrep -m 1 'Playback.*?\[o' | egrep -o '\[o.+\]')
+RAW_AUDIO=$(amixer sget Master | egrep -o -m 1 "[0-9]+"% | awk '{print substr($0, 0, length($0)-1)}')
+DRIVE="${BLOCK_INSTANCE:-$HOME}"
+SPACE=$(df -h -P -l "$DRIVE" | awk '/\/.*/ {print $4
+    use=$5
+}')
+CPU_USAGE=$( mpstat | grep -A 5 "%idle" | tail -n 1 | awk '{print 100 - $13}')
+BRIGHTNESS=$(cat /sys/class/backlight/nv_backlight/brightness)%
+
+#Ethernet
+if [ "$eth_state" = "up" ]; then
+    ETH=$eth_ip
+else
+    ETH="No IP"
+fi
+#Wifi
+if [ "$wlan_state" = "up" ]; then
+    WLAN=$wlan_ip
+else 
+    WLAN="No IP"
+fi
+#Battery
+if [[ "$BAT_STATE" == "Charging" ]]; then
+    BAT=" $BAT_RAW%"
+elif [[ "$BAT_STATE" == "fully-charged" ]]; then
+    BAT=" Capacity"
+elif [[ "$BAT_STATE" == "Discharging" ]]; then
+    if [[ "$BAT_RAW" -lt "20" ]]; then
+        BAT=" $BAT_RAW%"
+    elif [[ "$BAT_RAW" -lt "40" ]]; then
+        BAT=" $BAT_RAW%"
+    elif [[ "$BAT_RAW" -lt "60" ]]; then
+        BAT=" $BAT_RAW%"
+    elif [[ "$BAT_RAW" -lt "85" ]]; then
+        BAT=" $BAT_RAW%"
+    else
+        BAT=" $BAT_RAW%"
+    fi
+fi
+#Audio
+if [[ $AUDIO_STATE == '[off]' ]]; then
+    AUDIO=" Muted"
+elif [[ $RAW_AUDIO == 0 ]]; then
+    AUDIO=" "$RAW_AUDIO%
+elif [[ $RAW_AUDIO -lt 51 ]]; then
+    AUDIO=" "$RAW_AUDIO%
+else
+    AUDIO=" "$RAW_AUDIO%
+fi
+
+
+#PRINT
+echo "𐀰　"$CPU_USAGE"% | 𐀱"$SPACE "| " $ETH "| " $WLAN "|" $BAT "| " $BRIGHTNESS" |" $AUDIO "|" $DATE

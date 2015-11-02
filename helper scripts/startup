@@ -1,0 +1,5 @@
+#!/bin/bash
+
+feh --bg-scale /home/chris/Pictures/Backgrounds/YqzTGZP.jpg
+xautolock -time 10 -locker slock &
+compton &
