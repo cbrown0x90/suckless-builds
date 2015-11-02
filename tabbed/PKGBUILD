@@ -13,7 +13,7 @@ depends=('libx11')
 source=("http://dl.suckless.org/tools/${pkgname}-${pkgver}.tar.gz"
         'custom-patch.diff')
 md5sums=('7898992feb9358e0196119750b77b42c'
-         '314b8f1c13e609c73623c71733da7dee')
+         'a4c9fbeff355d017a42004bda361c25f')
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
