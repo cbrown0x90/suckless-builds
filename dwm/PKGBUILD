@@ -11,11 +11,11 @@ url="http://dwm.suckless.org"
 arch=('i686' 'x86_64')
 license=('MIT')
 options=(zipman)
-depends=('libx11' 'libxinerama' 'libxft' 'freetype2')
+depends=('libx11' 'pango' 'libxinerama' 'libxft' 'freetype2')
 source=(http://dl.suckless.org/dwm/dwm-$pkgver.tar.gz
 	custom-patch.diff)
 md5sums=('f0b6b1093b7207f89c2a90b848c008ec'
-         '53d5ff82bf03fa474b6d09144519fd36')
+         'e03a55ca677237c823007782743750c2')
 
 
 build() {
