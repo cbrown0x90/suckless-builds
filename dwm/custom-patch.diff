@@ -126,7 +126,7 @@ diff -Naur ../dwm-6.1/config.h ./config.h
 +        { MODKEY|ShiftMask,             XK_Right,  movestack,      {.i = +1 } },
 +        { MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 +        { MODKEY,                       XK_u,      incnmaster,     {.i = -1 } },
-+        { MODKEY,                       XK_q,      setmfact,       {.f = -0.05} },
++        { MODKEY,                       XK_k,      setmfact,       {.f = -0.05} },
 +        { MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 +        { MODKEY,                       XK_Tab,    view,           {0} },
 +        { MODKEY|ShiftMask,             XK_q,      killclient,     {0} },
