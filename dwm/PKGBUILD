@@ -5,7 +5,7 @@
 
 pkgname=dwm
 pkgver=6.1
-pkgrel=1
+pkgrel=2
 pkgdesc="A dynamic window manager for X"
 url="http://dwm.suckless.org"
 arch=('i686' 'x86_64')
@@ -15,7 +15,7 @@ depends=('libx11' 'pango' 'libxinerama' 'libxft' 'freetype2')
 source=(http://dl.suckless.org/dwm/dwm-$pkgver.tar.gz
 	custom-patch.diff)
 md5sums=('f0b6b1093b7207f89c2a90b848c008ec'
-         '1bb8e965192c07e0fe4aeaeaed36eed1')
+         'efcf512bb75a06281962a3592f92b597')
 
 
 build() {
