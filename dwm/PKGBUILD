@@ -15,7 +15,7 @@ depends=('libx11' 'pango' 'libxinerama' 'libxft' 'freetype2')
 source=(http://dl.suckless.org/dwm/dwm-$pkgver.tar.gz
 	custom-patch.diff)
 md5sums=('f0b6b1093b7207f89c2a90b848c008ec'
-         'efcf512bb75a06281962a3592f92b597')
+         '153ba401d063742428f8c08c55378079')
 
 
 build() {

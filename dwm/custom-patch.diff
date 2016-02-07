@@ -85,7 +85,7 @@ diff -Naur ../dwm-6.1/config.h ./config.h
 +
 +/* commands */
 +static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-b", "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
++static const char *dmenucmd[] = { "/home/chris/.scripts/dmenu_start", NULL };
 +static const char *termcmd[]  = { "st", NULL };
 +static const char *web[] = { "chromium", NULL };
 +static const char *lock[] = { "slock", NULL };
