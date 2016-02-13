@@ -1,8 +1,8 @@
 #!/bin/bash
-eth_state="$(cat /sys/class/net/enp3s0/operstate)"
-eth_ip=$(ip -o -4 addr show dev enp3s0 | awk -F '[ /]+' '/global/ {print $4}')
-wlan_state="$(cat /sys/class/net/wlan0/operstate)"
-wlan_ip=$(ip -o -4 addr show dev wlan0 | awk -F '[ /]+' '/global/ {print $4}')
+eth_state="$(cat /sys/class/net/enp0s25/operstate)"
+eth_ip=$(ip -o -4 addr show dev enp0s25 | awk -F '[ /]+' '/global/ {print $4}')
+wlan_state="$(cat /sys/class/net/wlp3s0/operstate)"
+wlan_ip=$(ip -o -4 addr show dev wlp3s0 | awk -F '[ /]+' '/global/ {print $4}')
 BAT_STATE=$(acpi | awk '{print substr($3, 0, length($3)-1)}')
 BAT_RAW=$(acpi | awk '{print substr($4, 0, length($4)-2)}')
 DATE=$( date +"%F %T")
@@ -12,8 +12,7 @@ DRIVE="${BLOCK_INSTANCE:-$HOME}"
 SPACE=$(df -h -P -l "$DRIVE" | awk '/\/.*/ {print $4
     use=$5
 }')
-CPU_USAGE=$( mpstat | grep -A 5 "%idle" | tail -n 1 | awk '{print 100 - $13}')
-BRIGHTNESS=$(cat /sys/class/backlight/nv_backlight/brightness)%
+BRIGHTNESS=$(cat /sys/class/backlight/intel_backlight/brightness)%
 
 #Ethernet
 if [ "$eth_state" = "up" ]; then
@@ -30,7 +29,7 @@ fi
 #Battery
 if [[ "$BAT_STATE" == "Charging" ]]; then
     BAT=" $BAT_RAW%"
-elif [[ "$BAT_STATE" == "fully-charged" ]]; then
+elif [[ "$BAT_STATE" == "Full" ]]; then
     BAT=" Capacity"
 elif [[ "$BAT_STATE" == "Discharging" ]]; then
     if [[ "$BAT_RAW" -lt "20" ]]; then
@@ -58,4 +57,4 @@ fi
 
 
 #PRINT
-echo "𐀰　"$CPU_USAGE"% | 𐀱"$SPACE "| " $ETH "| " $WLAN "|" $BAT "| " $BRIGHTNESS" |" $AUDIO "|" $DATE
+echo " "$SPACE "| " $ETH "| " $WLAN "|" $BAT "| " $BRIGHTNESS" |" $AUDIO "|" $DATE
