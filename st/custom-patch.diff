@@ -163,7 +163,7 @@ diff -Naur ../pkg/st-0.6/config.h ./config.h
 + *
 + * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
 + */
-+static char font[] = "Source Code Pro:pixelsize=14:antialias=true:autohint=false";
++static char font[] = "gohufont";
 +static int borderpx = 2;
 +static int histsize = 2000;
 +
@@ -768,7 +768,7 @@ diff -Naur ../pkg/st-0.6/custom-patch.diff ./custom-patch.diff
 ++ *
 ++ * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
 ++ */
-++static char font[] = "Source Code Pro:pixelsize=14:antialias=true:autohint=false";
+++static char font[] = "gohufont";
 ++static int borderpx = 2;
 ++static int histsize = 2000;
 ++
