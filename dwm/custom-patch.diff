@@ -85,21 +85,21 @@ diff -Naur ../dwm-6.1/config.h ./config.h
 +
 +/* commands */
 +static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-+static const char *dmenucmd[] = { "/home/chris/.scripts/dmenu_start", NULL };
++static const char *dmenucmd[] = { "/home/chris/.scripts/helper\ scripts/dmenu_start", NULL };
 +static const char *termcmd[]  = { "st", NULL };
 +static const char *web[] = { "chromium", NULL };
 +static const char *lock[] = { "slock", NULL };
 +static const char *surf[] = { "tabbed", "-c", "surf", "-e", NULL };
 +static const char *ncmpcpp[] = { "st", "-e", "ncmpcpp", NULL };
-+static const char *screenshot[] = { "/home/chris/.scripts/screenshot", NULL };
++static const char *screenshot[] = { "/home/chris/.scripts/helper\ scripts/screenshot", NULL };
 +static const char *audio_mute[] = { "amixer", "sset", "Master", "toggle", NULL };
 +static const char *audio_raise[] = { "amixer", "sset", "Master", "5%-", NULL };
 +static const char *audio_lower[] = { "amixer", "sset", "Master", "5%+", NULL };
 +static const char *bright_up[] = { "/home/chris/.scripts/bright_up", NULL };
 +static const char *bright_down[] = { "/home/chris/.scripts/bright_down", NULL };
-+static const char *mopidy_prev[] = { "/home/chris/.scripts/mopidy_previous", NULL };
-+static const char *mopidy_next[] = { "/home/chris/.scripts/mopidy_next", NULL };
-+static const char *mopidy_play[] = { "/home/chris/.scripts/mopidy_play", NULL };
++static const char *mopidy_prev[] = { "/home/chris/.scripts/mopidy\ commands/mopidy_previous", NULL };
++static const char *mopidy_next[] = { "/home/chris/.scripts/mopidy\ commands/mopidy_next", NULL };
++static const char *mopidy_play[] = { "/home/chris/.scripts/mopidy\ commands/mopidy_play", NULL };
 +
 +#include "movestack.c"
 +static Key keys[] = {
