@@ -2,13 +2,13 @@ diff -Naur ../dwm-6.1/config.def.h ./config.def.h
 --- ../dwm-6.1/config.def.h	2015-11-08 17:39:37.000000000 -0500
 +++ ./config.def.h	2015-11-10 09:43:14.080356128 -0500
 @@ -54,9 +54,10 @@
- 
+
  /* commands */
  static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 -static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 +static const char *dmenucmd[] = { "dmenu_run", "-b", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
  static const char *termcmd[]  = { "st", NULL };
- 
+
 +#include "movestack.c"
  static Key keys[] = {
  	/* modifier                     key        function        argument */
@@ -89,7 +89,7 @@ diff -Naur ../dwm-6.1/config.h ./config.h
 +static const char *web[] = { "chromium", NULL };
 +static const char *lock[] = { "slock", NULL };
 +static const char *surf[] = { "tabbed", "-c", "surf", "-e", NULL };
-+static const char *ncmpcpp[] = { "st", "-e", "ncmpcpp", NULL };
++static const char *ncmpcpp[] = { "st", "-e", "fish", "-c", "ncmpcpp", NULL };
 +static const char *screenshot[] = { "/home/chris/.scripts/helper\ scripts/screenshot", NULL };
 +static const char *audio_mute[] = { "amixer", "sset", "Master", "toggle", NULL };
 +static const char *audio_raise[] = { "amixer", "sset", "Master", "5%-", NULL };
@@ -178,13 +178,13 @@ diff -Naur ../dwm-6.1/config.mk ./config.mk
  # OpenBSD (uncomment)
 -FREETYPEINC = ${X11INC}/freetype2
 +#FREETYPEINC = ${X11INC}/freetype2
- 
+
  # includes and libs
 -INCS = -I${X11INC} -I${FREETYPEINC}
 -LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS}
 +INCS = -I. -I/usr/include -I${X11INC} `pkg-config --cflags xft pango pangoxft` -I${FREETYPEINC}
 +LIBS = -L/usr/lib -lc -L${X11LIB} -lX11 ${XINERAMALIBS} `pkg-config --libs xft pango pangoxft` ${FREETYPELIBS}
- 
+
  # flags
  CPPFLAGS = -D_BSD_SOURCE -D_POSIX_C_SOURCE=2 -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
 diff -Naur ../dwm-6.1/dwm.c ./dwm.c
@@ -227,7 +227,7 @@ diff -Naur ../dwm-6.1/dwm.c ./dwm.c
  static void pop(Client *);
  static void propertynotify(XEvent *e);
 @@ -236,7 +242,7 @@
- 
+
  /* variables */
  static const char broken[] = "broken";
 -static char stext[256];
@@ -253,7 +253,7 @@ diff -Naur ../dwm-6.1/dwm.c ./dwm.c
  		restack(m);
 @@ -406,6 +415,17 @@
  }
- 
+
  void
 +attachaside(Client *c) {
 +    Client *at = nexttagged(c);
@@ -309,12 +309,12 @@ diff -Naur ../dwm-6.1/dwm.c ./dwm.c
  	drw_setscheme(drw, &scheme[SchemeNorm]);
 @@ -843,6 +872,35 @@
  }
- 
+
  void
 +adjustborders(Monitor *m) {
 +    Client *c, *l = NULL;
 +    int visible = 0;
-+  
++
 +    for(c = m->clients; c; c = c->next) {
 +        if (ISVISIBLE(c) && !c->isfloating && m->lt[m->sellt]->arrange) {
 +            if (m->lt[m->sellt]->arrange == monocle) {
@@ -326,11 +326,11 @@ diff -Naur ../dwm-6.1/dwm.c ./dwm.c
 +                c->oldbw = c->bw;
 +                c->bw = borderpx;
 +        }
-+    
++
 +        l = c;
 +        }
 +    }
-+  
++
 +    if (l && visible == 1 && l->bw) {
 +        l->oldbw = l->bw;
 +        l->bw = 0;
@@ -362,7 +362,7 @@ diff -Naur ../dwm-6.1/dwm.c ./dwm.c
 +		}
 +		adjustborders(c->mon);
 +	}
- 
+
  	wc.border_width = c->bw;
  	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
 @@ -1076,7 +1147,7 @@
@@ -376,7 +376,7 @@ diff -Naur ../dwm-6.1/dwm.c ./dwm.c
  	                (unsigned char *) &(c->win), 1);
 @@ -1210,6 +1281,16 @@
  }
- 
+
  Client *
 +nexttagged(Client *c) {
 +    Client *walked = c->mon->clients;
@@ -412,7 +412,7 @@ diff -Naur ../dwm-6.1/dwm.c ./dwm.c
 @@ -2003,7 +2084,8 @@
  	Atom state = getatomprop(c, netatom[NetWMState]);
  	Atom wtype = getatomprop(c, netatom[NetWMWindowType]);
- 
+
 -	if (state == netatom[NetWMFullscreen])
 +	if (state == netatom[NetWMFullscreen] ||
 +                (WIDTH(c) == (c->mon->mx + c->mon->mw) && (HEIGHT(c) == (c->mon->my + c->mon->mh))))
