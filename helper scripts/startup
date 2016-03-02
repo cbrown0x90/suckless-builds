@@ -1,7 +1,6 @@
 #!/bin/bash
 
-~/.scripts/background &
-#xautolock -time 10 -locker slock &
+~/.scripts/helper\ scripts/background &
 xset s 300
-/home/chris/.scripts/locker slock &
+/home/chris/.scripts/helper\ scripts/locker slock &
 compton &
