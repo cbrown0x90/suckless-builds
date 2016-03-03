@@ -1,6 +1,6 @@
 #!/bin/bash
 
-~/.scripts/helper\ scripts/background &
+feh --bg-fill --randomize /home/chris/Pictures/Backgrounds
 xset s 300
 /home/chris/.scripts/helper\ scripts/locker slock &
-compton &
+compton -b
