@@ -1,32 +1,26 @@
 #!/bin/bash
+
+# Ethernet
 eth_state="$(cat /sys/class/net/enp0s25/operstate)"
 eth_ip=$(ip -o -4 addr show dev enp0s25 | awk -F '[ /]+' '/global/ {print $4}')
-wlan_state="$(cat /sys/class/net/wlp3s0/operstate)"
-wlan_ip=$(ip -o -4 addr show dev wlp3s0 | awk -F '[ /]+' '/global/ {print $4}')
-BAT_STATE=$(acpi | awk '{print substr($3, 0, length($3)-1)}')
-BAT_RAW=$(acpi | awk '{print substr($4, 0, length($4)-2)}')
-DATE=$( date +"%F %T")
-AUDIO_STATE=$(amixer sget Master | egrep -m 1 'Playback.*?\[o' | egrep -o '\[o.+\]')
-RAW_AUDIO=$(amixer sget Master | egrep -o -m 1 "[0-9]+"% | awk '{print substr($0, 0, length($0)-1)}')
-DRIVE="${BLOCK_INSTANCE:-$HOME}"
-SPACE=$(df -h -P -l "$DRIVE" | awk '/\/.*/ {print $4
-    use=$5
-}')
-BRIGHTNESS=$(cat /sys/class/backlight/intel_backlight/brightness)%
-
-#Ethernet
 if [ "$eth_state" = "up" ]; then
     ETH=$eth_ip
 else
     ETH="No IP"
 fi
-#Wifi
+
+# Wireless
+wlan_state="$(cat /sys/class/net/wlp3s0/operstate)"
+wlan_ip=$(ip -o -4 addr show dev wlp3s0 | awk -F '[ /]+' '/global/ {print $4}')
 if [ "$wlan_state" = "up" ]; then
     WLAN=$wlan_ip
-else 
+else
     WLAN="No IP"
 fi
-#Battery
+
+# Battery
+BAT_STATE=$(acpi | awk '{print substr($3, 0, length($3)-1)}')
+BAT_RAW=$(acpi | awk '{print substr($4, 0, length($4)-2)}')
 if [[ "$BAT_STATE" == "Charging" ]]; then
     BAT=" $BAT_RAW%"
 elif [[ "$BAT_STATE" == "Full" ]]; then
@@ -44,7 +38,13 @@ elif [[ "$BAT_STATE" == "Discharging" ]]; then
         BAT=" $BAT_RAW%"
     fi
 fi
-#Audio
+
+# Time
+DATE=$( date +"%F %T")
+
+# Audio
+AUDIO_STATE=$(amixer sget Master | egrep -m 1 'Playback.*?\[o' | egrep -o '\[o.+\]')
+RAW_AUDIO=$(amixer sget Master | egrep -o -m 1 "[0-9]+"% | awk '{print substr($0, 0, length($0)-1)}')
 if [[ $AUDIO_STATE == '[off]' ]]; then
     AUDIO=" Muted"
 elif [[ $RAW_AUDIO == 0 ]]; then
@@ -55,6 +55,14 @@ else
     AUDIO=" "$RAW_AUDIO%
 fi
 
+# HDD
+DRIVE="${BLOCK_INSTANCE:-$HOME}"
+SPACE=$(df -h -P -l "$DRIVE" | awk '/\/.*/ {print $4
+    use=$5
+}')
+
+# Brightness
+BRIGHTNESS=$(cat /sys/class/backlight/intel_backlight/brightness)%
 
 #PRINT
 echo " "$SPACE "| " $ETH "| " $WLAN "|" $BAT "| " $BRIGHTNESS" |" $AUDIO "|" $DATE
