@@ -11,17 +11,17 @@ diff -Naur ../dwm-6.1/config.def.h ./config.def.h
 
 +#include "movestack.c"
  static Key keys[] = {
- 	/* modifier                     key        function        argument */
- 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+	/* modifier                     key        function        argument */
+	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 @@ -68,6 +69,8 @@
- 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
- 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
- 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
+	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 +	{ MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
 +	{ MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
- 	{ MODKEY,                       XK_Return, zoom,           {0} },
- 	{ MODKEY,                       XK_Tab,    view,           {0} },
- 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
+	{ MODKEY,                       XK_Return, zoom,           {0} },
+	{ MODKEY,                       XK_Tab,    view,           {0} },
+	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
 diff -Naur ../dwm-6.1/config.h ./config.h
 --- ../dwm-6.1/config.h	1969-12-31 19:00:00.000000000 -0500
 +++ ./config.h	2015-11-10 09:43:14.080356128 -0500
@@ -90,7 +90,7 @@ diff -Naur ../dwm-6.1/config.h ./config.h
 +static const char *lock[] = { "slock", NULL };
 +static const char *surf[] = { "tabbed", "-c", "surf", "-e", NULL };
 +static const char *ncmpcpp[] = { "st", "-e", "fish", "-c", "ncmpcpp", NULL };
-+static const char *screenshot[] = { "/home/chris/.scripts/helper\ scripts/screenshot", NULL };
++static const char *screenshot[] = { "/home/chris/.scripts/helper scripts/screenshot" , NULL };
 +static const char *audio_mute[] = { "amixer", "sset", "Master", "toggle", NULL };
 +static const char *audio_raise[] = { "amixer", "sset", "Master", "5%-", NULL };
 +static const char *audio_lower[] = { "amixer", "sset", "Master", "5%+", NULL };
