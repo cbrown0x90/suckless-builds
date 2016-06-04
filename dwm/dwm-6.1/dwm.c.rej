@@ -1,0 +1,37 @@
+--- /dev/null
++++ dwm.c
+@@ -404,6 +407,17 @@ attach(Client *c) {
+ }
+ 
+ void
++attachaside(Client *c) {
++	Client *at = nexttagged(c);
++	if(!at) {
++		attach(c);
++		return;
++	}
++	c->next = at->next;
++	at->next = c;
++}
++
++void
+ attachstack(Client *c) {
+ 	c->snext = c->mon->stack;
+ 	c->mon->stack = c;
+@@ -1182,6 +1196,16 @@ movemouse(const Arg *arg) {
+ }
+ 
+ Client *
++nexttagged(Client *c) {
++	Client *walked = c->mon->clients;
++	for(;
++		walked && (walked->isfloating || !ISVISIBLEONTAG(walked, c->tags));
++		walked = walked->next
++	);
++	return walked;
++}
++
++Client *
+ nexttiled(Client *c) {
+ 	for(; c && (c->isfloating || !ISVISIBLE(c)); c = c->next);
+ 	return c;
