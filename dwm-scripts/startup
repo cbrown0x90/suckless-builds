@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#feh --bg-fill --randomize /home/chris/Pictures/Backgrounds
 detect-displays
 xset s 300
 /home/chris/.scripts/helper\ scripts/locker slock &
