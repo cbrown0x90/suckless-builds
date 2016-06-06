@@ -1,26 +1,26 @@
-diff -r 050d521d66d8 config.def.h
---- a/config.def.h	Tue Aug 24 13:13:20 2010 +0100
-+++ b/config.def.h	Sun Sep 05 18:43:07 2010 +0200
-@@ -48,6 +48,7 @@
- static const char *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
- static const char *termcmd[]  = { "uxterm", NULL };
-
+diff -Naur tmp/config.def.h ../../dwm-6.1/tmp/config.def.h
+--- tmp/config.def.h	2016-06-06 11:37:39.401002067 -0400
++++ ../../dwm-6.1/tmp/config.def.h	2016-06-06 11:37:56.991002485 -0400
+@@ -57,6 +57,7 @@
+ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
+ static const char *termcmd[]  = { "st", NULL };
+ 
 +#include "movestack.c"
  static Key keys[] = {
-    /* modifier                     key        function        argument */
-    { MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-@@ -57,6 +58,8 @@
-    { MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-    { MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-    { MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-+   { MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
-+   { MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
-    { MODKEY,                       XK_Return, zoom,           {0} },
-    { MODKEY,                       XK_Tab,    view,           {0} },
-    { MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
-diff -r 050d521d66d8 movestack.c
---- /dev/null	Thu Jan 01 00:00:00 1970 +0000
-+++ b/movestack.c	Sun Sep 05 18:43:07 2010 +0200
+ 	/* modifier                     key        function        argument */
+ 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+@@ -82,6 +83,8 @@
+ 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+ 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
++    { MODKEY|ShiftMask,             XK_j,      movestack,      {.i = +1 } },
++    { MODKEY|ShiftMask,             XK_k,      movestack,      {.i = -1 } },
+ 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)
+diff -Naur tmp/movestack.c ../../dwm-6.1/tmp/movestack.c
+--- tmp/movestack.c	1969-12-31 19:00:00.000000000 -0500
++++ ../../dwm-6.1/tmp/movestack.c	2016-06-06 11:37:56.991002485 -0400
 @@ -0,0 +1,49 @@
 +void
 +movestack(const Arg *arg) {
