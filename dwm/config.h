@@ -5,17 +5,10 @@ static const char *fonts[] = {
     "gohufont:pixelsize=11", "Font Awesome:pixelsize=11"
 };
 static const char dmenufont[]       = "Source Code Pro:size=8";
-static const char normbordercolor[] = "#444444";
-static const char normbgcolor[]     = "#222222";
-static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#bbbbbb";
-static const char selbgcolor[]      = "#bbbbbb";
-static const char selfgcolor[]      = "#222222";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int snap      = 32;       /* snap pixel */
+static const unsigned int snap      = 10;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
-static const Bool statusmarkup      = True;     /* True means use pango markup in status message */
 
 /* tagging */
 static const char *tags[] = { "1: Web", "2: Personal", "3: Work", "4: Misc", "5: Music" };
@@ -42,6 +35,15 @@ static const Layout layouts[] = {
     { "[M]",      monocle },
 };
 
+#define NUMCOLORS 4
+static const char colors[NUMCOLORS][MAXCOLORS][8] = {
+  // border   foreground background
+  { "#222222", "#bbbbbb", "#222222" },  // normal
+  { "#bbbbbb", "#222222", "#bbbbbb" },  // selected
+  { "#222222", "#ffd700", "#222222" },  // urgent/warning  (black on yellow)
+  { "#222222", "#ff4040", "#222222" },  // error (white on red)
+};
+
 /* key definitions */
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
@@ -57,7 +59,7 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "/home/chris/.scripts/helper\ scripts/dmenu_start", NULL };
 static const char *termcmd[]  = { "st", NULL };
-static const char *web[] = { "qutebrowser", "--qt-stylesheet", "/home/chris/.config/qt5ct/qss/browser.qss", NULL };
+static const char *web[] = { "qutebrowser", NULL };
 static const char *lock[] = { "slock", NULL };
 static const char *ncmpcpp[] = { "st", "-e", "fish", "-c", "ncmpcpp", NULL };
 static const char *screenshot[] = { "/home/chris/.scripts/helper scripts/screenshot" , NULL };
