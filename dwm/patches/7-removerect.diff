@@ -1,0 +1,11 @@
+--- dwm.c	2016-06-06 13:54:44.137597756 -0400
++++ ./dwm.c	2016-06-06 13:53:54.460596575 -0400
+@@ -758,8 +758,6 @@
+ 		w = TEXTW(tags[i]);
+ 		drw_setscheme(drw, m->tagset[m->seltags] & 1 << i ? &scheme[SchemeSel] : &scheme[SchemeNorm]);
+ 		drw_text(drw, x, 0, w, bh, tags[i], urg & 1 << i);
+-		drw_rect(drw, x + 1, 1, dx, dx, m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
+-		           occ & 1 << i, urg & 1 << i);
+ 		x += w;
+ 	}
+ 	w = blw = TEXTW(m->ltsymbol);
