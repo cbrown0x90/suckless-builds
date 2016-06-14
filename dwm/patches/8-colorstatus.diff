@@ -1,6 +1,6 @@
 diff -Naur tmp/config.def.h ../../dwm-6.1/tmp/config.def.h
---- tmp/config.def.h	2016-06-07 12:36:55.974202130 -0400
-+++ ../../dwm-6.1/tmp/config.def.h	2016-06-07 12:37:48.973203390 -0400
+--- tmp/config.def.h	2016-06-14 12:22:48.151976923 -0400
++++ ../../dwm-6.1/tmp/config.def.h	2016-06-14 12:23:13.490977526 -0400
 @@ -5,12 +5,6 @@
  	"monospace:size=10"
  };
@@ -17,7 +17,7 @@ diff -Naur tmp/config.def.h ../../dwm-6.1/tmp/config.def.h
 @@ -41,6 +35,16 @@
  	{ "[M]",      monocle },
  };
- 
+
 +#define NUMCOLORS 4
 +static const char colors[NUMCOLORS][MAXCOLORS][8] = {
 +  // border   foreground background
@@ -32,12 +32,12 @@ diff -Naur tmp/config.def.h ../../dwm-6.1/tmp/config.def.h
  #define MODKEY Mod1Mask
  #define TAGKEYS(KEY,TAG) \
 diff -Naur tmp/drw.c ../../dwm-6.1/tmp/drw.c
---- tmp/drw.c	2016-06-07 12:36:15.332201164 -0400
-+++ ../../dwm-6.1/tmp/drw.c	2016-06-07 12:34:27.830198609 -0400
+--- tmp/drw.c	2016-06-14 12:22:48.151976923 -0400
++++ ../../dwm-6.1/tmp/drw.c	2016-06-14 12:23:13.488977526 -0400
 @@ -206,6 +206,56 @@
  	drw->scheme = scheme;
  }
- 
+
 +int
 +drw_get_width(Drw *drw, int numcolors, const char *text)
 +{
@@ -92,20 +92,20 @@ diff -Naur tmp/drw.c ../../dwm-6.1/tmp/drw.c
  drw_rect(Drw *drw, int x, int y, unsigned int w, unsigned int h, int filled, int empty, int invert)
  {
 diff -Naur tmp/drw.h ../../dwm-6.1/tmp/drw.h
---- tmp/drw.h	2016-06-07 12:36:15.332201164 -0400
-+++ ../../dwm-6.1/tmp/drw.h	2016-06-07 12:34:27.830198609 -0400
+--- tmp/drw.h	2016-06-14 12:22:48.151976923 -0400
++++ ../../dwm-6.1/tmp/drw.h	2016-06-14 12:23:13.488977526 -0400
 @@ -67,6 +67,8 @@
  void drw_setscheme(Drw *, ClrScheme *);
- 
+
  /* Drawing functions */
 +int drw_get_width(Drw *, int, const char *);
 +void drw_colored_text(Drw *, ClrScheme *, int, int, int, unsigned int, unsigned int, char *);
  void drw_rect(Drw *, int, int, unsigned int, unsigned int, int, int, int);
  int drw_text(Drw *, int, int, unsigned int, unsigned int, const char *, int);
- 
+
 diff -Naur tmp/dwm.c ../../dwm-6.1/tmp/dwm.c
---- tmp/dwm.c	2016-06-07 12:36:15.333201164 -0400
-+++ ../../dwm-6.1/tmp/dwm.c	2016-06-07 12:34:27.830198609 -0400
+--- tmp/dwm.c	2016-06-14 12:22:48.151976923 -0400
++++ ../../dwm-6.1/tmp/dwm.c	2016-06-14 12:23:13.488977526 -0400
 @@ -52,6 +52,7 @@
  #define ISVISIBLEONTAG(C, T)    ((C->tags & T))
  #define ISVISIBLE(C)            ISVISIBLEONTAG(C, C->mon->tagset[C->mon->seltags])
@@ -123,19 +123,18 @@ diff -Naur tmp/dwm.c ../../dwm-6.1/tmp/dwm.c
  static Display *dpy;
  static Drw *drw;
  static Monitor *mons, *selmon;
-@@ -756,33 +757,31 @@
+@@ -756,31 +757,31 @@
          if(!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
              continue;
  		w = TEXTW(tags[i]);
 -		drw_setscheme(drw, m->tagset[m->seltags] & 1 << i ? &scheme[SchemeSel] : &scheme[SchemeNorm]);
 -		drw_text(drw, x, 0, w, bh, tags[i], urg & 1 << i);
--		drw_rect(drw, x + 1, 1, dx, dx, m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
--		           occ & 1 << i, urg & 1 << i);
 -		x += w;
-+		drw_setscheme(drw, &scheme[(m->tagset[m->seltags] & 1 << i) ? 1 : (urg & 1 << i ? 2 : 0)]);
+-	}
++	    drw_setscheme(drw, &scheme[(m->tagset[m->seltags] & 1 << i) ? 1 : (urg & 1 << i ? 2 : 0)]);
 +		drw_text(drw, x, 0, w, bh, tags[i], 0);
 +        x += w;
- 	}
++    }
  	w = blw = TEXTW(m->ltsymbol);
 -	drw_setscheme(drw, &scheme[SchemeNorm]);
 -	drw_text(drw, x, 0, w, bh, m->ltsymbol, 0);
@@ -145,8 +144,8 @@ diff -Naur tmp/dwm.c ../../dwm-6.1/tmp/dwm.c
  	xx = x;
 -	w = TEXTW(stext);
 -	x = m->ww - w;
-+    w = drw_get_width(drw, NUMCOLORS, stext);
-+    x = m->ww - w;
++	w = drw_get_width(drw, NUMCOLORS, stext);
++   x = m->ww - w;
  	if(x < xx) {
  		x = xx;
  		w = m->ww - xx;
@@ -154,23 +153,23 @@ diff -Naur tmp/dwm.c ../../dwm-6.1/tmp/dwm.c
 -	drw_text(drw, x, 0, w, bh, stext, 0);
 -	if ((w = x - xx) > bh) {
 +	drw_colored_text(drw, scheme, NUMCOLORS, x, 0, w, bh, stext);
-+    if ((w = x - xx) > bh) {
++   if ((w = x - xx) > bh) {
  		x = xx;
  		if (m->sel) {
 -			drw_setscheme(drw, m == selmon ? &scheme[SchemeSel] : &scheme[SchemeNorm]);
 -			drw_text(drw, x, 0, w, bh, m->sel->name, 0);
 +			drw_setscheme(drw, &scheme[m == selmon ? 1 : 0]);
-+            drw_text(drw, x, 0, w, bh, m->sel->name, 0);
++           drw_text(drw, x, 0, w, bh, m->sel->name, 0);
  			drw_rect(drw, x + 1, 1, dx, dx, m->sel->isfixed, m->sel->isfloating, 0);
  		} else {
 -			drw_setscheme(drw, &scheme[SchemeNorm]);
 -			drw_rect(drw, x, 0, w, bh, 1, 0, 1);
 +			drw_setscheme(drw, &scheme[0]);
-+            drw_rect(drw, x, 0, w, bh, 1, 0, 1);
++           drw_rect(drw, x, 0, w, bh, 1, 0, 1);
  		}
  	}
  	drw_map(drw, m->barwin, 0, 0, m->ww, bh);
-@@ -842,7 +841,7 @@
+@@ -840,7 +841,7 @@
  		detachstack(c);
  		attachstack(c);
  		grabbuttons(c, 1);
@@ -179,8 +178,8 @@ diff -Naur tmp/dwm.c ../../dwm-6.1/tmp/dwm.c
  		setfocus(c);
  	} else {
  		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
-@@ -1100,7 +1099,7 @@
- 
+@@ -1098,7 +1099,7 @@
+
  	wc.border_width = c->bw;
  	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
 -	XSetWindowBorder(dpy, w, scheme[SchemeNorm].border->pix);
@@ -188,7 +187,7 @@ diff -Naur tmp/dwm.c ../../dwm-6.1/tmp/dwm.c
  	configure(c); /* propagates border_width, if size doesn't change */
  	updatewindowtype(c);
  	updatesizehints(c);
-@@ -1634,12 +1633,12 @@
+@@ -1632,12 +1633,12 @@
  	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
  	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
  	/* init appearance */
@@ -207,7 +206,7 @@ diff -Naur tmp/dwm.c ../../dwm-6.1/tmp/dwm.c
  	/* init bars */
  	updatebars();
  	updatestatus();
-@@ -1801,7 +1800,7 @@
+@@ -1799,7 +1800,7 @@
  	if (!c)
  		return;
  	grabbuttons(c, 0);
