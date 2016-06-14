@@ -11,7 +11,7 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
 
 /* tagging */
-static const char *tags[] = { "1: Web", "2: Personal", "3: Work", "4: Misc", "5: Music" };
+static const char *tags[] = { "1: Web", "2: Personal", "3: Work", "4: Misc", "5: Music", "6: Chat" };
 
 static const Rule rules[] = {
     /* xprop(1):
@@ -19,8 +19,7 @@ static const Rule rules[] = {
      *	WM_NAME(STRING) = title
      */
     /* class      instance    title       tags mask     isfloating   monitor */
-    { "Gimp",     NULL,       NULL,       0,            1,           -1 },
-    { "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+    { "qTox",     NULL,       NULL,       1 << 5,       0,           -1 },
 };
 
 /* layout(s) */
@@ -57,19 +56,20 @@ static const char colors[NUMCOLORS][MAXCOLORS][8] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "/home/chris/.scripts/helper\ scripts/dmenu_start", NULL };
+static const char *dmenucmd[] = { "dmenu_start", NULL };
 static const char *termcmd[]  = { "st", NULL };
 static const char *web[] = { "qutebrowser", NULL };
 static const char *lock[] = { "slock", NULL };
-static const char *ncmpcpp[] = { "st", "-e", "fish", "-c", "ncmpcpp", NULL };
-static const char *screenshot[] = { "/home/chris/.scripts/helper scripts/screenshot" , NULL };
+static const char *ncmpcpp[] = { "ncmpcpp-start", NULL };
+static const char *tox[] = { "qtox", NULL };
+static const char *screenshot[] = { "screenshot" , NULL };
 static const char *audio_mute[] = { "amixer", "sset", "Master", "toggle", NULL };
 static const char *audio_raise[] = { "amixer", "sset", "Master", "5%-", NULL };
 static const char *audio_lower[] = { "amixer", "sset", "Master", "5%+", NULL };
-static const char *toggleLock[] = { "/home/chris/.scripts/helper scripts/toggle-lock", NULL };
-static const char *mopidy_prev[] = { "/home/chris/.scripts/mopidy\ commands/mopidy_previous", NULL };
-static const char *mopidy_next[] = { "/home/chris/.scripts/mopidy\ commands/mopidy_next", NULL };
-static const char *mopidy_play[] = { "/home/chris/.scripts/mopidy\ commands/mopidy_play", NULL };
+static const char *toggleLock[] = { "toggle-lock", NULL };
+static const char *mopidy_prev[] = { "mopidy_previous", NULL };
+static const char *mopidy_next[] = { "mopidy_next", NULL };
+static const char *mopidy_play[] = { "mopidy_play", NULL };
 
 #include "movestack.c"
 static Key keys[] = {
@@ -78,6 +78,7 @@ static Key keys[] = {
         { MODKEY,                       XK_Return, 	spawn,          {.v = termcmd } },
         { MODKEY,                       XK_c,      	spawn,          {.v = web } },
         { MODKEY,                       XK_b,      	togglebar,      {0} },
+        { MODKEY,                       XK_t,      	spawn,          {.v = tox } },
         { MODKEY,                       XK_n,      	spawn,          {.v = ncmpcpp } },
         { 0,                            XK_Print, 	spawn,         	{.v = screenshot } },
         { 0,                            0x1008ff12, spawn,         	{.v = audio_mute } },
