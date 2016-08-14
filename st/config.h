@@ -7,7 +7,7 @@
  */
 static char font[] = "gohufont:pixelsize=14";
 static int borderpx = 2;
-static int histsize = 2000;
+#define histsize 2000
 
 /*
  * What program is execed by st depends of these precedence rules:
@@ -66,38 +66,55 @@ static int bellvolume = 0;
 /* default TERM value */
 static char termname[] = "st-256color";
 
+/*
+ * spaces per tab
+ *
+ * When you are changing this value, don't forget to adapt the »it« value in
+ * the st.info and appropriately install the st.info in the environment where
+ * you use this st version.
+ *
+ *	it#$tabspaces,
+ *
+ * Secondly make sure your kernel is not expanding tabs. When running `stty
+ * -a` »tab0« should appear. You can tell the terminal to not expand tabs by
+ *  running following command:
+ *
+ *	stty tabs
+ */
 static unsigned int tabspaces = 8;
-
-/* Terminal colors (16 first used in escape sequence) */
-static const char *colorname[] = {
-        /* 8 normal colors */
-        "black",
-        "#d75f5f",
-        "#87af5f",
-        "#ffaf5f",
-        "#87afd7",
-        "#8787af",
-        "#5f8787",
-        "#D0D0D0",
-        /* 8 bright colors */
-        "#404040",
-        "#EA8484",
-        "#C7F09F",
-        "#FFCC9A",
-        "#a5caef",
-        "#A6A6DE",
-        "#69b2b2",
-        "#d7d7d7",
-        "#080808",
-        [255] = 0,
-
-        /* more colors can be added after 255 to use with DefaultXX */
-        "#cccccc",
-        "#000000",
-};
 
 /* bg opacity */
 static const int alpha = 0xCC;
+
+/* Terminal colors (16 first used in escape sequence) */
+static const char *colorname[] = {
+	/* 8 normal colors */
+	"black",
+	"red3",
+	"green3",
+	"yellow3",
+	"blue2",
+	"magenta3",
+	"cyan3",
+	"gray90",
+
+	/* 8 bright colors */
+	"gray50",
+	"red",
+	"green",
+	"yellow",
+	"#5c5cff",
+	"magenta",
+	"cyan",
+	"white",
+
+	[255] = 0,
+
+	/* more colors can be added after 255 to use with DefaultXX */
+	"#cccccc",
+	"#000000",
+};
+
 
 /*
  * Default colors (colorname index)
@@ -106,6 +123,7 @@ static const int alpha = 0xCC;
 static unsigned int defaultfg = 7;
 static unsigned int defaultbg = 257;
 static unsigned int defaultcs = 256;
+static unsigned int defaultrcs = 257;
 
 /*
  * Default shape of cursor
@@ -124,7 +142,6 @@ static unsigned int mousefg = 7;
 static unsigned int mousebg = 0;
 
 /*
-	"black",
  * Colors used, when the specific fg == defaultfg. So in reverse mode this
  * will reverse too. Another logic would only make the simple feature too
  * complex.
@@ -132,16 +149,11 @@ static unsigned int mousebg = 0;
 static unsigned int defaultitalic = 11;
 static unsigned int defaultunderline = 7;
 
-/*
- * Internal mouse shortcuts.
- * Beware that overloading Button1 will disable the selection.
- */
-static MouseShortcut mkeys[] = {
-        /* button               function        argument */
-        { Button4,              kscrollup,      { .i = 1 } },
-        { Button5,              kscrolldown,    { .i = 1 } },
+static MouseKey mkeys[] = {
+	/* button               function        argument */
+	{ Button4,              kscrollup,      {.i =  1} },
+	{ Button5,              kscrolldown,    {.i =  1} },
 };
-
 
 /* Internal keyboard shortcuts. */
 #define MODKEY Mod1Mask
@@ -160,8 +172,8 @@ static Shortcut shortcuts[] = {
 	{ MODKEY|ShiftMask,     XK_C,           clipcopy,       {.i =  0} },
 	{ MODKEY|ShiftMask,     XK_V,           clippaste,      {.i =  0} },
 	{ MODKEY,               XK_Num_Lock,    numlock,        {.i =  0} },
-        { ShiftMask,            XK_Up,     kscrollup,      {.i = -1} },
-        { ShiftMask,            XK_Down,   kscrolldown,    {.i = -1} },
+	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 };
 
 /*
@@ -308,6 +320,7 @@ static Key key[] = {
 	{ XK_Delete,        XK_ANY_MOD,     "\033[P",       -1,    0,    0},
 	{ XK_Delete,        XK_ANY_MOD,     "\033[3~",      +1,    0,    0},
 	{ XK_BackSpace,     XK_NO_MOD,      "\177",          0,    0,    0},
+	{ XK_BackSpace,     Mod1Mask,       "\033\177",      0,    0,    0},
 	{ XK_Home,          ShiftMask,      "\033[2J",       0,   -1,    0},
 	{ XK_Home,          ShiftMask,      "\033[1;2H",     0,   +1,    0},
 	{ XK_Home,          XK_ANY_MOD,     "\033[H",        0,   -1,    0},
@@ -421,4 +434,13 @@ static Key key[] = {
 static uint selmasks[] = {
 	[SEL_RECTANGULAR] = Mod1Mask,
 };
+
+/*
+ * Printable characters in ASCII, used to estimate the advance width
+ * of single wide characters.
+ */
+static char ascii_printable[] =
+	" !\"#$%&'()*+,-./0123456789:;<=>?"
+	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
+	"`abcdefghijklmnopqrstuvwxyz{|}~";
 
