@@ -56,9 +56,9 @@ static const char colors[NUMCOLORS][MAXCOLORS][8] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_start", NULL };
+static const char *dmenucmd[] = { "dmenu-start", NULL };
 static const char *termcmd[]  = { "st", NULL };
-static const char *web[] = { "qutebrowser", NULL };
+static const char *web[] = { "qutebrowser", "--backend", "webengine", NULL };
 static const char *lock[] = { "slock", NULL };
 static const char *ncmpcpp[] = { "ncmpcpp-start", NULL };
 static const char *tox[] = { "qtox", NULL };
@@ -67,9 +67,9 @@ static const char *audio_mute[] = { "amixer", "sset", "Master", "toggle", NULL }
 static const char *audio_raise[] = { "amixer", "sset", "Master", "5%-", NULL };
 static const char *audio_lower[] = { "amixer", "sset", "Master", "5%+", NULL };
 static const char *toggleLock[] = { "toggle-lock", NULL };
-static const char *mopidy_prev[] = { "mopidy_previous", NULL };
-static const char *mopidy_next[] = { "mopidy_next", NULL };
-static const char *mopidy_play[] = { "mopidy_play", NULL };
+static const char *mopidy_prev[] = { "/home/chris/.scripts/mopidy-commands/mopidy-previous", NULL };
+static const char *mopidy_next[] = { "/home/chris/.scripts/mopidy-commands/mopidy-next", NULL };
+static const char *mopidy_play[] = { "/home/chris/.scripts/mopidy-commands/mopidy-play", NULL };
 
 #include "movestack.c"
 static Key keys[] = {
