@@ -2,6 +2,6 @@
 
 detect-displays
 xset s 300
-/home/chris/.scripts/helper\ scripts/locker slock &
+locker &
 compton -b
 mopidy -q &
