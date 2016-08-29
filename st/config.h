@@ -89,30 +89,31 @@ static const int alpha = 0xCC;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-	"black",
-	"red3",
-	"green3",
-	"yellow3",
-	"blue2",
-	"magenta3",
-	"cyan3",
-	"gray90",
+	"#1e1e1e",
+	"#cf6a4c",
+	"#8f9d6a",
+	"#f9ee98",
+	"#7587a6",
+	"#9b859d",
+	"#afc4db",
+	"#e5e5e5",
 
 	/* 8 bright colors */
-	"gray50",
-	"red",
-	"green",
-	"yellow",
-	"#5c5cff",
-	"magenta",
-	"cyan",
-	"white",
+	"#5f5a60",
+	"#cf6a4c",
+	"#8f9d6a",
+	"#f9ee98",
+	"#7587a6",
+	"#9b859d",
+	"#afc4db",
+	"#e5e5e5",
 
-	[255] = 0,
+    [255] = 0,
 
-	/* more colors can be added after 255 to use with DefaultXX */
+    /* more colors can be added after 255 to use with DefaultXX */
 	"#cccccc",
 	"#000000",
+
 };
 
 
