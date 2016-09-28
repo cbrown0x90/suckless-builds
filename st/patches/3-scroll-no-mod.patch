@@ -1,6 +1,6 @@
-diff -Naur ../tmp/patch/config.def.h patch/config.def.h
---- ../tmp/patch/config.def.h	2016-08-13 20:49:03.254680922 -0400
-+++ patch/config.def.h	2016-08-13 17:53:39.367855916 -0400
+diff -Naur a/config.def.h b/config.def.h
+--- a/config.def.h	2016-08-13 20:49:03.254680922 -0400
++++ b/config.def.h	2016-08-13 17:53:39.367855916 -0400
 @@ -146,20 +146,10 @@
  static unsigned int defaultitalic = 11;
  static unsigned int defaultunderline = 7;
@@ -25,9 +25,9 @@ diff -Naur ../tmp/patch/config.def.h patch/config.def.h
  };
 
  /* Internal keyboard shortcuts. */
-diff -Naur ../tmp/patch/st.c patch/st.c
---- ../tmp/patch/st.c	2016-08-13 20:49:03.255680922 -0400
-+++ patch/st.c	2016-08-13 20:57:41.756693245 -0400
+diff -Naur a/st.c b/st.c
+--- a/st.c	2016-08-13 20:49:03.255680922 -0400
++++ b/st.c	2016-08-13 20:57:41.756693245 -0400
 @@ -301,7 +301,6 @@
 
  typedef struct {
