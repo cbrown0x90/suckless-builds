@@ -1,5 +1,5 @@
---- dwm.c	2016-06-04 16:11:50.967286218 -0400
-+++ ./dwm.c	2016-06-04 16:10:44.136284630 -0400
+--- a/dwm.c	2016-06-04 16:11:50.967286218 -0400
++++ b/dwm.c	2016-06-04 16:10:44.136284630 -0400
 @@ -49,7 +49,8 @@
  #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
  #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \

@@ -1,13 +1,11 @@
 URL: http://dwm.suckless.org/patches/statusallmons
 This patch draws and updates the statusbar on all monitors.
 
-Index: dwm/dwm.c
-===================================================================
---- dwm/dwm.c.orig
-+++ dwm/dwm.c
+--- a/dwm.c
++++ b/dwm.c
 @@ -715,7 +715,7 @@ drawbar(Monitor *m)
  	Client *c;
- 
+
  	/* draw status first so it can be overdrawn by tags later */
 -	if (m == selmon) { /* status is only drawn on selected monitor */
 +	if (m == selmon || 1) { /* status is only drawn on selected monitor */
@@ -25,5 +23,5 @@ Index: dwm/dwm.c
 +	for(m = mons; m; m = m->next)
 +		drawbar(m);
  }
- 
+
  void

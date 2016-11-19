@@ -1,10 +1,9 @@
-diff -Naur tmp/config.def.h ../../dwm-6.1/tmp/config.def.h
---- tmp/config.def.h	2016-06-06 11:37:39.401002067 -0400
-+++ ../../dwm-6.1/tmp/config.def.h	2016-06-06 11:37:56.991002485 -0400
+--- a/config.def.h	2016-06-06 11:37:39.401002067 -0400
++++ b/config.def.h	2016-06-06 11:37:56.991002485 -0400
 @@ -57,6 +57,7 @@
  static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
  static const char *termcmd[]  = { "st", NULL };
- 
+
 +#include "movestack.c"
  static Key keys[] = {
  	/* modifier                     key        function        argument */
@@ -18,9 +17,8 @@ diff -Naur tmp/config.def.h ../../dwm-6.1/tmp/config.def.h
  	TAGKEYS(                        XK_1,                      0)
  	TAGKEYS(                        XK_2,                      1)
  	TAGKEYS(                        XK_3,                      2)
-diff -Naur tmp/movestack.c ../../dwm-6.1/tmp/movestack.c
---- tmp/movestack.c	1969-12-31 19:00:00.000000000 -0500
-+++ ../../dwm-6.1/tmp/movestack.c	2016-06-06 11:37:56.991002485 -0400
+--- a/movestack.c	1969-12-31 19:00:00.000000000 -0500
++++ b/movestack.c	2016-06-06 11:37:56.991002485 -0400
 @@ -0,0 +1,49 @@
 +void
 +movestack(const Arg *arg) {
