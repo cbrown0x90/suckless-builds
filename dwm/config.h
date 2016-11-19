@@ -5,7 +5,7 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 10;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
-static const char *fonts[]          = { "gohufont:size=11", "Font Awesome:size=11" };
+static const char *fonts[]          = { "gohufont:size=9", "Font Awesome:size=9" };
 static const char col_gray_dark[]       = "#222222";
 static const char col_gray_light[]       = "#bbbbbb";
 static const char *colors[SchemeLast][3]      = {
