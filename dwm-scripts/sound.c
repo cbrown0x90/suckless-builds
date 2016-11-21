@@ -59,9 +59,10 @@ void regex() {
 }
 
 char* volIcon() {
-    if (strcmp(mute, "off") == 0 || strcmp(vol, "0%") == 0) {
+    int test = atoi(vol);
+    if (strcmp(mute, "off") == 0 || test == 0) {
         return " ";
-    } else if (strcmp(vol, "50%") == -1) {
+    } else if (test < 50) {
         return " ";
     } else {
         return " ";
