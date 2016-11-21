@@ -20,12 +20,11 @@ unsigned long remaining;
 char unit;
 
 //Internet
-char wlan0_operstate[5];
-char eth0_operstate[5];
 struct sockaddr_in* eth0;
 struct sockaddr_in* wlan0;
 struct ifaddrs* ip;
 struct ifaddrs* tmp;
+char IPString[20];
 
 //Sleep
 Display* dpy;
@@ -96,9 +95,11 @@ void getIP() {
 
     getifaddrs(&ip);
     for (tmp = ip; tmp != NULL; tmp = tmp->ifa_next) {
+
         if (strcmp(tmp->ifa_name, "eth0") == 0 &&
                 tmp->ifa_addr->sa_family == AF_INET) {
             eth0 = (struct sockaddr_in*) tmp->ifa_addr;
+
         } else if (strcmp(tmp->ifa_name, "wlan0") == 0 &&
                 tmp->ifa_addr->sa_family == AF_INET) {
             wlan0 = (struct sockaddr_in*) tmp->ifa_addr;
@@ -130,15 +131,23 @@ char* batteryIcon() {
             strcmp(status, "Full") == 0) {
         return "";
     } else if (level < 5) {
-        return " ";
+        return "";
     } else if (level < 25) {
-        return " ";
+        return "";
     } else if (level < 60) {
-        return " ";
+        return "";
     } else if (level < 85) {
-        return " ";
+        return "";
     } else {
-        return " ";
+        return "";
+    }
+}
+
+void getIPString() {
+    if (eth0) {
+        sprintf(IPString, " %s", inet_ntoa(eth0->sin_addr));
+    } else {
+        sprintf(IPString, " %s", wlan0 ? inet_ntoa(wlan0->sin_addr) : "No IP");
     }
 }
 
@@ -149,14 +158,14 @@ int main() {
         getSleep();
         getBattery();
         getIP();
+        getIPString();
         getDisk();
         getSound();
         regex();
 
-        sprintf(bar, " %ld%c |  %s |  %s | %s %d%% | %s | %s%s | %d-%02d-%02d %02d:%02d:%02d",
+        sprintf(bar, " %ld%c | %s | %s %d%% | %s | %s%s | %d-%02d-%02d %02d:%02d:%02d",
                 remaining, unit,
-                (eth0 == NULL ? "No IP" : inet_ntoa(eth0->sin_addr)),
-                (wlan0 == NULL ? "No IP" : inet_ntoa(wlan0->sin_addr)),
+                IPString,
                 batteryIcon(), level,
                 timeout ? " true" : " false",
                 volIcon(), ((strcmp(mute, "off")) == 0 ? "Muted" : vol),
