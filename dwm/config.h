@@ -8,7 +8,7 @@ static const int topbar             = 0;        /* 0 means bottom bar */
 static const char *fonts[]          = { "gohufont:size=9", "Font Awesome:size=9" };
 static const char col_gray_dark[]       = "#222222";
 static const char col_gray_light[]       = "#bbbbbb";
-static const char *colors[SchemeLast][3]      = {
+static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray_light, col_gray_dark, col_gray_dark },
 	[SchemeSel] =  { col_gray_dark, col_gray_light,  col_gray_light },
