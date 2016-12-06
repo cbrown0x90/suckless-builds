@@ -163,7 +163,7 @@ int main() {
         getSound();
         regex();
 
-        sprintf(bar, " %ld%c | %s | %s %d%% | %s | %s%s | %d-%02d-%02d %02d:%02d:%02d",
+        sprintf(bar, "  %ld%c | %s | %s %d%% | %s | %s%s | %d-%02d-%02d %02d:%02d:%02d",
                 remaining, unit,
                 IPString,
                 batteryIcon(), level,
