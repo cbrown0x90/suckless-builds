@@ -8,6 +8,7 @@ typedef struct sound {
 } sound;
 
 void soundInit(void);
+void soundDestroy(void);
 sound getMasterStatus(void);
 char* volIcon(void);
 

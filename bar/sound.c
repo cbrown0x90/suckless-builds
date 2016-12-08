@@ -15,6 +15,10 @@ void soundInit() {
     snd_mixer_selem_id_set_name(sid, "Master");
 }
 
+void soundDestroy() {
+    snd_mixer_selem_id_free(sid);
+}
+
 sound getMasterStatus() {
     snd_mixer_open(&handle, 0);
     snd_mixer_attach(handle, "default");

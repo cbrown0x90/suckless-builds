@@ -59,6 +59,12 @@ void init() {
 
 }
 
+void destroy() {
+    soundDestroy();
+
+    XCloseDisplay(dpy);
+}
+
 void getSizeUnit() {
     if (remaining < 1024) {
         unit = 'B';
@@ -97,6 +103,12 @@ void getIP() {
             wlan0 = (struct sockaddr_in*) tmp->ifa_addr;
         }
     }
+    if (eth0) {
+        sprintf(IPString, " %s", inet_ntoa(eth0->sin_addr));
+    } else {
+        sprintf(IPString, " %s", wlan0 ? inet_ntoa(wlan0->sin_addr) : "No IP");
+    }
+    freeifaddrs(ip);
 }
 
 void getSleep() {
@@ -135,14 +147,6 @@ char* batteryIcon() {
     }
 }
 
-void getIPString() {
-    if (eth0) {
-        sprintf(IPString, " %s", inet_ntoa(eth0->sin_addr));
-    } else {
-        sprintf(IPString, " %s", wlan0 ? inet_ntoa(wlan0->sin_addr) : "No IP");
-    }
-}
-
 int main() {
     init();
     while (1) {
@@ -150,7 +154,6 @@ int main() {
         getSleep();
         getBattery();
         getIP();
-        getIPString();
         getDisk();
         s = getMasterStatus();
 
@@ -165,4 +168,5 @@ int main() {
         XStoreName(dpy, root, bar);
         nanosleep(&sleepval, NULL);
     }
+    destroy();
 }
