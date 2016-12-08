@@ -1,5 +1,4 @@
-st/st/
 dwm-test/
-dwm/dwm/
-dwm-scripts/bar
+st-test/
+dwm-bar/bar
 *.o
