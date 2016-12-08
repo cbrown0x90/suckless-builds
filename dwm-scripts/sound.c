@@ -32,7 +32,7 @@ sound getMasterStatus() {
     return s;
 }
 
-char* volIcon(void) {
+char* volIcon() {
     if (s.status == 0 || s.volume == 0) {
         return " ";
     } else if (s.volume < 50) {
