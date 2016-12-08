@@ -1,8 +1,14 @@
 #ifndef SOUND_H
 #define SOUND_H
 
+typedef struct sound {
+    long volume;
+    int status;
+    char percent[4];
+} sound;
+
+void soundInit(void);
+sound getMasterStatus(void);
 char* volIcon(void);
-void regex(void);
-void getSound(void);
 
 #endif

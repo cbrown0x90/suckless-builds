@@ -9,7 +9,7 @@
 #include <sys/statvfs.h>
 #include <string.h>
 #include <stdlib.h>
-#include "sound.c"
+#include "sound.h"
 
 //XSetRoot
 static Window root;
@@ -39,11 +39,16 @@ FILE* capacity_file;
 //Time
 struct tm* date;
 
+//Sound
+sound s;
+
 //
 char bar[100];
 struct timespec sleepval;
 
 void init() {
+
+    soundInit();
 
     sleepval.tv_sec = 0;
     sleepval.tv_nsec = 500000000;
@@ -52,19 +57,6 @@ void init() {
     screen = DefaultScreen(dpy);
     root = RootWindow(dpy, screen);
 
-    mute_regex = pcre_compile(
-            "\\[(o[fn]f?)\\]",
-            0,
-            &error,
-            &erroffset,
-            NULL);
-
-    vol_regex = pcre_compile(
-            "\\[(\\d?\\d?\\d%)\\]",
-            0,
-            &error,
-            &erroffset,
-            NULL);
 }
 
 void getSizeUnit() {
@@ -160,15 +152,14 @@ int main() {
         getIP();
         getIPString();
         getDisk();
-        getSound();
-        regex();
+        s = getMasterStatus();
 
         sprintf(bar, "  %ld%c | %s | %s %d%% | %s | %s%s | %d-%02d-%02d %02d:%02d:%02d",
                 remaining, unit,
                 IPString,
                 batteryIcon(), level,
                 timeout ? " true" : " false",
-                volIcon(), ((strcmp(mute, "off")) == 0 ? "Muted" : vol),
+                volIcon(), !s.status ? "Muted" : s.percent,
                 1900 + date->tm_year, date->tm_mon + 1, date->tm_mday, date->tm_hour, date->tm_min, date->tm_sec);
 
         XStoreName(dpy, root, bar);

@@ -1,68 +1,41 @@
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <pcre.h>
-#include <string.h>
+#include <alsa/asoundlib.h>
+#include <math.h>
+#include "sound.h"
 
-#define OVECCOUNT 6
+long volume_tmp;
+snd_mixer_t* handle;
+snd_mixer_selem_id_t* sid;
+snd_mixer_elem_t* elem;
 
-char out[200];
-const char* error;
-int erroffset;
-int ovector[OVECCOUNT];
-pcre* mute_regex;
-pcre* vol_regex;
-char mute[3];
-char vol[4];
+sound s;
 
-void getSound() {
-    int pipefd[2];
-    pipe(pipefd);
-    pid_t pid = fork();
-    if (pid == 0) {
-        dup2(pipefd[1], STDOUT_FILENO);
-        close(pipefd[0]);
-        close(pipefd[1]);
-        execlp("amixer", "amixer", "sget", "Master", NULL);
-    } else {
-        wait(NULL);
-        close(pipefd[1]);
-        read(pipefd[0], out, sizeof(out));
-        close(pipefd[0]);
-    }
+void soundInit() {
+    snd_mixer_selem_id_malloc(&sid);
+    snd_mixer_selem_id_set_index(sid, 0);
+    snd_mixer_selem_id_set_name(sid, "Master");
 }
 
-void regex() {
-    pcre_exec(mute_regex,
-            NULL,
-            out,
-            sizeof(out),
-            0,
-            0,
-            ovector,
-            OVECCOUNT);
+sound getMasterStatus() {
+    snd_mixer_open(&handle, 0);
+    snd_mixer_attach(handle, "default");
+    snd_mixer_selem_register(handle, NULL, NULL);
+    snd_mixer_load(handle);
 
-    sprintf(mute, "%.*s", ovector[3] - ovector[2], out + ovector[2]);
+    elem = snd_mixer_find_selem(handle, sid);
 
-    pcre_exec(vol_regex,
-            NULL,
-            out,
-            sizeof(out),
-            0,
-            0,
-            ovector,
-            OVECCOUNT);
+    snd_mixer_selem_get_playback_switch(elem, SND_MIXER_SCHN_MONO, &(s.status));
+    snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_MONO, &volume_tmp);
 
-    sprintf(vol, "%.*s", ovector[3] - ovector[2], out + ovector[2]);
+    s.volume = rint((double)volume_tmp/74 * 100);
+    sprintf(s.percent, "%ld%%", s.volume);
+    snd_mixer_close(handle);
+    return s;
 }
 
-char* volIcon() {
-    int test = atoi(vol);
-    if (strcmp(mute, "off") == 0 || test == 0) {
+char* volIcon(void) {
+    if (s.status == 0 || s.volume == 0) {
         return " ";
-    } else if (test < 50) {
+    } else if (s.volume < 50) {
         return " ";
     } else {
         return " ";
