@@ -9,6 +9,8 @@
 #include <sys/statvfs.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include "sound.h"
 
 //XSetRoot
@@ -31,7 +33,7 @@ Display* dpy;
 int timeout, interval, prefer_blank, allow_exp;
 
 //Battery
-int level;
+char level[4];
 char status[12];
 FILE* status_file;
 FILE* capacity_file;
@@ -116,12 +118,17 @@ void getSleep() {
 }
 
 void getBattery() {
-    status_file = fopen("/sys/class/power_supply/BAT0/status", "r");
-    capacity_file = fopen("/sys/class/power_supply/BAT0/capacity", "r");
-    fscanf(status_file, "%s", status);
-    fscanf(capacity_file, "%d", &level);
-    fclose(status_file);
-    fclose(capacity_file);
+    if (access("/sys/class/power_supply/BAT0", F_OK)) {
+        memcpy(&status, "unknown", sizeof(char) * 7);
+        memcpy(&level, "?", sizeof(char));
+    } else {
+        status_file = fopen("/sys/class/power_supply/BAT0/status", "r");
+        capacity_file = fopen("/sys/class/power_supply/BAT0/capacity", "r");
+        fscanf(status_file, "%s", status);
+        fscanf(capacity_file, "%s", level);
+        fclose(status_file);
+        fclose(capacity_file);
+    }
 }
 
 //Get time
@@ -131,16 +138,17 @@ void getTime() {
 }
 
 char* batteryIcon() {
+    int tmp_level = atoi(level);
     if (strcmp(status, "Charging") == 0 ||
             strcmp(status, "Full") == 0) {
         return "";
-    } else if (level < 5) {
+    } else if (tmp_level < 5) {
         return "";
-    } else if (level < 25) {
+    } else if (tmp_level < 25) {
         return "";
-    } else if (level < 60) {
+    } else if (tmp_level < 60) {
         return "";
-    } else if (level < 85) {
+    } else if (tmp_level < 85) {
         return "";
     } else {
         return "";
@@ -157,7 +165,7 @@ int main() {
         getDisk();
         s = getMasterStatus();
 
-        sprintf(bar, "  %ld%c | %s | %s %d%% | %s | %s%s | %d-%02d-%02d %02d:%02d:%02d",
+        sprintf(bar, "  %ld%c | %s | %s %s%% | %s | %s%s | %d-%02d-%02d %02d:%02d:%02d",
                 remaining, unit,
                 IPString,
                 batteryIcon(), level,
