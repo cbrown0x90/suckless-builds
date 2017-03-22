@@ -26,7 +26,7 @@ struct sockaddr_in* eth0;
 struct sockaddr_in* wlan0;
 struct ifaddrs* ip;
 struct ifaddrs* tmp;
-char IPString[20];
+char* IPString;
 
 //Sleep
 Display* dpy;
@@ -49,6 +49,7 @@ char bar[100];
 struct timespec sleepval;
 
 void init() {
+    IPString = malloc(sizeof(char) * 20);
 
     soundInit();
 
@@ -164,6 +165,7 @@ int main() {
         getIP();
         getDisk();
         s = getMasterStatus();
+
 
         sprintf(bar, "  %ld%c | %s | %s %s%% | %s | %s%s | %d-%02d-%02d %02d:%02d:%02d",
                 remaining, unit,
