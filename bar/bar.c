@@ -107,9 +107,11 @@ void getIP() {
         }
     }
     if (eth0) {
-        sprintf(IPString, " %s", inet_ntoa(eth0->sin_addr));
+        sprintf(IPString, "  %s ", inet_ntoa(eth0->sin_addr));
+    } else if (wlan0) {
+        sprintf(IPString, "  %s ", inet_ntoa(wlan0->sin_addr));
     } else {
-        sprintf(IPString, " %s", wlan0 ? inet_ntoa(wlan0->sin_addr) : "No IP");
+        sprintf(IPString, " No IP");
     }
     freeifaddrs(ip);
 }
@@ -142,17 +144,17 @@ char* batteryIcon() {
     int tmp_level = atoi(level);
     if (strcmp(status, "Charging") == 0 ||
             strcmp(status, "Full") == 0) {
-        return "";
+        return " ";
     } else if (tmp_level < 5) {
-        return "";
+        return "";
     } else if (tmp_level < 25) {
-        return "";
+        return "";
     } else if (tmp_level < 60) {
-        return "";
+        return " ";
     } else if (tmp_level < 85) {
-        return "";
+        return " ";
     } else {
-        return "";
+        return " ";
     }
 }
 
@@ -166,15 +168,16 @@ int main() {
         getDisk();
         s = getMasterStatus();
 
-
-        sprintf(bar, "  %ld%c | %s | %s %s%% | %s | %s%s | %d-%02d-%02d %02d:%02d:%02d",
+        //calloc(100, sizeof(char));
+        sprintf(bar, "  %ld%c |%s|%s %s%%\x01|%s| %s%s | %d-%02d-%02d %02d:%02d:%02d",
                 remaining, unit,
                 IPString,
                 batteryIcon(), level,
-                timeout ? " true" : " false",
+                timeout ? "\x01 true\x01" : "\x03 false\x01",
                 volIcon(), !s.status ? "Muted" : s.percent,
                 1900 + date->tm_year, date->tm_mon + 1, date->tm_mday, date->tm_hour, date->tm_min, date->tm_sec);
 
+        //XStoreName(dpy, root, 0);
         XStoreName(dpy, root, bar);
         nanosleep(&sleepval, NULL);
     }
