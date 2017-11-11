@@ -97,11 +97,11 @@ void getIP() {
     getifaddrs(&ip);
     for (tmp = ip; tmp != NULL; tmp = tmp->ifa_next) {
 
-        if (strcmp(tmp->ifa_name, "eth0") == 0 &&
+        if (strcmp(tmp->ifa_name, "enp0s25") == 0 &&
                 tmp->ifa_addr->sa_family == AF_INET) {
             eth0 = (struct sockaddr_in*) tmp->ifa_addr;
 
-        } else if (strcmp(tmp->ifa_name, "wlan0") == 0 &&
+        } else if (strcmp(tmp->ifa_name, "wlp3s0") == 0 &&
                 tmp->ifa_addr->sa_family == AF_INET) {
             wlan0 = (struct sockaddr_in*) tmp->ifa_addr;
         }
