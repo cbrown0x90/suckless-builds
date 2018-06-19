@@ -5,13 +5,14 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 10;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
-static const char *fonts[]          = { "gohufont:size=9", "Font Awesome:size=9" };
+static const char *fonts[]          = { "Gohu GohuFont:size=9", "Font Awesome:size=9" };
 static const char col_gray_dark[]       = "#222222";
 static const char col_gray_light[]       = "#bbbbbb";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray_light, col_gray_dark, col_gray_dark },
 	[SchemeSel] =  { col_gray_dark, col_gray_light,  col_gray_light },
+	{ "#ff4040", col_gray_dark, col_gray_dark },
 };
 
 /* tagging */
@@ -51,17 +52,17 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu-start", NULL };
-static const char *termcmd[]  = { "st", NULL };
+static const char *dmenucmd[] = { "/home/chris/.scripts/dmenu-start", NULL };
+static const char *termcmd[]  = { "st", "-e", "fish", NULL };
 static const char *web[] = { "qutebrowser", "--backend", "webengine", NULL };
 static const char *lock[] = { "slock", NULL };
-static const char *ncmpcpp[] = { "ncmpcpp-start", NULL };
+static const char *ncmpcpp[] = { "/home/chris/.scripts/ncmpcpp-start", NULL };
 static const char *tox[] = { "qtox", NULL };
-static const char *screenshot[] = { "screenshot" , NULL };
+static const char *screenshot[] = { "/home/chris/.scripts/screenshot" , NULL };
 static const char *audio_mute[] = { "amixer", "sset", "Master", "toggle", NULL };
 static const char *audio_raise[] = { "amixer", "sset", "Master", "5%-", NULL };
 static const char *audio_lower[] = { "amixer", "sset", "Master", "5%+", NULL };
-static const char *toggleLock[] = { "toggle-lock", NULL };
+static const char *toggleLock[] = { "/home/chris/.scripts/toggle-lock", NULL };
 static const char *mopidy_prev[] = { "/home/chris/.scripts/mopidy-commands/mopidy-previous", NULL };
 static const char *mopidy_next[] = { "/home/chris/.scripts/mopidy-commands/mopidy-next", NULL };
 static const char *mopidy_play[] = { "/home/chris/.scripts/mopidy-commands/mopidy-play", NULL };
