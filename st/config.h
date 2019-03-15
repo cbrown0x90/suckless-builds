@@ -28,11 +28,12 @@ static float cwscale = 1.0;
 static float chscale = 1.0;
 
 /*
- * word delimiter string
+ * all space and punctuation characters are considered word delimiters, unless
+ * listed here.
  *
- * More advanced example: " `'\"()[]{}"
+ * More advanced example: L"#$%&+,-./:=?_~"
  */
-char *worddelimiters = " ";
+wchar_t *extrawordchars = L"";
 
 /* selection timeouts (in milliseconds) */
 static unsigned int doubleclicktimeout = 300;
@@ -95,7 +96,7 @@ static const char *colorname[] = {
     "#7587a6",
     "#9b859d",
     "#afc4db",
-    "#e5e5e5",
+    "#a7a7a7",
 
 	/* 8 bright colors */
     "#5f5a60",
@@ -105,7 +106,14 @@ static const char *colorname[] = {
     "#7587a6",
     "#9b859d",
     "#afc4db",
-    "#e5e5e5",
+    "#ffffff",
+
+    "#cda869",
+    "#9b703f",
+    "#323537",
+    "#464b50",
+    "#838184",
+    "#c3c3c3",
 
 	[255] = 0,
 
@@ -186,7 +194,6 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-	{ TERMMOD,              XK_I,           iso14755,       {.i =  0} },
 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
 };
